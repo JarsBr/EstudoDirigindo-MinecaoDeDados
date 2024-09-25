@@ -1,0 +1,150 @@
+
+---
+title: "Análise de Dados - Aula 1"
+author: "Ítalo e José Antonio"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+##### Análise de Dados - Aula 1 #####
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Questão 1
+
+**Descrição:**  
+Nesta questão, carregamos o conjunto de dados `iris` e visualizamos sua estrutura utilizando a função `View()`.
+
+```{r}
+# Carregar o dataset iris
+data(iris)
+
+# Visualizar o dataset
+View(iris)
+```
+
+### Questão 2
+
+**Descrição:**  
+Aqui, utilizamos as funções `dim()`, `nrow()` e `ncol()` para verificar as dimensões do conjunto de dados, o número de linhas e o número de colunas.
+
+```{r}
+# Verificar dimensões do dataset
+dim(iris)
+
+# Número de linhas
+nrow(iris)
+
+# Número de colunas
+ncol(iris)
+```
+
+### Questão 3
+
+**Descrição:**  
+Utilizamos a função `str()` para exibir a estrutura do conjunto de dados `iris`, o que nos permite observar os tipos de variáveis e os primeiros valores de cada uma.
+
+```{r}
+# Exibir a estrutura do dataset
+str(iris)
+```
+
+### Questão 4
+
+**Descrição:**  
+Nesta etapa, adicionamos dados ausentes ao conjunto de dados e em seguida removemos a linha adicional. Após isso, usamos a função `summary()` para gerar um resumo estatístico.
+
+```{r}
+# Adicionar uma linha com dados ausentes
+# iris <- rbind(iris, c(5.86, NA, NA, 1.89, as.factor("virginica")))
+
+# Remover a última linha (caso tenhamos adicionado)
+# iris <- iris[-151,]
+
+# Resumo do dataset
+summary(iris)
+```
+
+### Questão 5
+
+**Descrição:**  
+Aqui, usamos a função `summary()` para obter um resumo estatístico e calcular a porcentagem de valores ausentes.
+
+```{r}
+# Resumo estatístico dos dados
+summary(iris)
+
+# Cálculo da porcentagem de valores ausentes (NA) em cada coluna
+na_percent <- sapply(iris, function(x) sum(is.na(x)) / length(x) * 100)
+na_percent
+```
+
+### Questão 6
+
+**Descrição:**  
+(Inclua a descrição e o código para a Questão 6)
+
+### Questão 7
+
+**Descrição:**  
+(Inclua a descrição e o código para a Questão 7)
+
+### Questão 8
+
+**Descrição:**  
+Calculamos as médias, os valores mínimos e máximos das variáveis `Sepal.Length` e `Petal.Length` para as espécies `setosa`, `versicolor` e `virginica`.
+
+```{r}
+# Setosa
+mean(iris$Sepal.Length[1:50])
+mean(iris$Petal.Length[1:50])
+min(iris$Sepal.Length[1:50])
+min(iris$Petal.Length[1:50])
+max(iris$Sepal.Length[1:50])
+max(iris$Petal.Length[1:50])
+
+# Versicolor
+mean(iris$Sepal.Length[51:100])
+mean(iris$Petal.Length[51:100])
+
+# Virginica
+mean(iris$Sepal.Length[101:150])
+mean(iris$Petal.Length[101:150])
+```
+
+### Questão 9
+
+**Descrição:**  
+(Inclua a descrição e o código para a Questão 9)
+
+### Questão 10
+
+**Descrição:**  
+(Inclua a descrição e o código para a Questão 10)
+
+### Questão 11
+
+**Descrição:**  
+(Inclua a descrição e o código para a Questão 11)
+
+### Questão 12
+
+**Descrição:**  
+(Inclua a descrição e o código para a Questão 12)
+
+### Questão 13
+
+**Descrição:**  
+(Inclua a descrição e o código para a Questão 13)
+
+### Questão 14
+
+**Descrição:**  
+(Inclua a descrição e o código para a Questão 14)
+
+### Questão 15
+
+**Descrição:**  
+(Inclua a descrição e o código para a Questão 15)
