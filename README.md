@@ -1,1 +1,1 @@
-# Minera-o-de-Dados---Estudo-dirigido
+# EstudoDirigindo-MinecaoDeDados
