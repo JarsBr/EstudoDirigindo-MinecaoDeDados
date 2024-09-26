@@ -1,150 +1,109 @@
-
 ---
-title: "Análise de Dados - Aula 1"
+title: "Estudo Dirigido - Glass Identification"
 author: "Ítalo e José Antonio"
-date: "`r Sys.Date()`"
-output: html_document
+date: "06/10/2024"
+output: pdf_document
 ---
 
-##### Análise de Dados - Aula 1 #####
+```{r, echo=FALSE}
+### Instalar pacotes necessários
+installed.packages(mlbench)
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+### Carregar pacotes necessários
+library(mlbench)
+
+### Carregar a base de dados Glass do pacote mlbench
+data("Glass", package = "mlbench")
 ```
 
 ### Questão 1
+A base de dados **Glass Identification** é usada para classificar diferentes tipos de vidro com base em suas propriedades químicas, o que é útil em investigações criminais. Ao analisar fragmentos de vidro encontrados em cenas de crime, é possível identificar sua origem e ligá-los a um local ou suspeito. A base de dados contém variáveis que medem a quantidade de diferentes óxidos químicos presentes nas amostras de vidro, ajudando a distinguir entre os tipos.
 
-**Descrição:**  
-Nesta questão, carregamos o conjunto de dados `iris` e visualizamos sua estrutura utilizando a função `View()`.
+O objetivo principal desse estudo é determinar se o vidro pertence a janelas produzidas pelo método de "float glass" ou a outro tipo. Essa classificação é feita com base em padrões químicos, usando três métodos de análise para melhorar a precisão na identificação. Para isso, foi realizada uma análise com três métodos de classificação:
 
-```{r}
-# Carregar o dataset iris
-data(iris)
+- **Beagle**: Resultados incorretos ao classificar vidros de janelas "float" foram 10, e 19 para vidros que não eram "float".
+- **NN (Nearest Neighbors)**: Houve 12 respostas incorretas para vidros "float" e 16 para vidros que não eram "float".
+- **DA (Discriminant Analysis)**: Este método apresentou 21 erros para vidros "float" e 22 para outros vidros.
 
-# Visualizar o dataset
-View(iris)
+A seguir, o gráfico mostra esses resultados:
+
+```{r, echo=FALSE, fig.width=5, fig.height=3}
+### Dados dos erros de classificação
+erros_classificacao <- data.frame(
+  Method = c("Beagle", "Beagle", "NN", "NN", "DA", "DA"),
+  Glass_Type = c("Float", "Non-Float", "Float", "Non-Float", "Float", "Non-Float"),
+  Errors = c(10, 19, 12, 16, 21, 22)
+)
+
+### Gráfico de barras dos erros de classificação
+library(ggplot2)
+ggplot(erros_classificacao, aes(x = Method, y = Errors, fill = Glass_Type)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Erros de Classificação por Método e Tipo de Vidro",
+       x = "Método de Classificação", y = "Número de Erros") +
+  theme_minimal()
 ```
+
 
 ### Questão 2
 
-**Descrição:**  
-Aqui, utilizamos as funções `dim()`, `nrow()` e `ncol()` para verificar as dimensões do conjunto de dados, o número de linhas e o número de colunas.
-
-```{r}
-# Verificar dimensões do dataset
-dim(iris)
-
-# Número de linhas
-nrow(iris)
-
-# Número de colunas
-ncol(iris)
+```{r, echo=TRUE}
+dim(Glass)
 ```
+
+Essa base de dados possui 214 amostras e 10 variáveis. Cada variável representa uma característica química ou física dos fragmentos de vidro, sendo a última variável uma classe, sendo o tipo de vidro.
+
 
 ### Questão 3
 
-**Descrição:**  
-Utilizamos a função `str()` para exibir a estrutura do conjunto de dados `iris`, o que nos permite observar os tipos de variáveis e os primeiros valores de cada uma.
+str(Glass)
 
-```{r}
-# Exibir a estrutura do dataset
-str(iris)
-```
+table(Glass$Type)
+
 
 ### Questão 4
 
-**Descrição:**  
-Nesta etapa, adicionamos dados ausentes ao conjunto de dados e em seguida removemos a linha adicional. Após isso, usamos a função `summary()` para gerar um resumo estatístico.
 
-```{r}
-# Adicionar uma linha com dados ausentes
-# iris <- rbind(iris, c(5.86, NA, NA, 1.89, as.factor("virginica")))
-
-# Remover a última linha (caso tenhamos adicionado)
-# iris <- iris[-151,]
-
-# Resumo do dataset
-summary(iris)
-```
 
 ### Questão 5
 
-**Descrição:**  
-Aqui, usamos a função `summary()` para obter um resumo estatístico e calcular a porcentagem de valores ausentes.
 
-```{r}
-# Resumo estatístico dos dados
-summary(iris)
-
-# Cálculo da porcentagem de valores ausentes (NA) em cada coluna
-na_percent <- sapply(iris, function(x) sum(is.na(x)) / length(x) * 100)
-na_percent
-```
 
 ### Questão 6
 
-**Descrição:**  
-(Inclua a descrição e o código para a Questão 6)
+
 
 ### Questão 7
 
-**Descrição:**  
-(Inclua a descrição e o código para a Questão 7)
 
 ### Questão 8
 
-**Descrição:**  
-Calculamos as médias, os valores mínimos e máximos das variáveis `Sepal.Length` e `Petal.Length` para as espécies `setosa`, `versicolor` e `virginica`.
 
-```{r}
-# Setosa
-mean(iris$Sepal.Length[1:50])
-mean(iris$Petal.Length[1:50])
-min(iris$Sepal.Length[1:50])
-min(iris$Petal.Length[1:50])
-max(iris$Sepal.Length[1:50])
-max(iris$Petal.Length[1:50])
-
-# Versicolor
-mean(iris$Sepal.Length[51:100])
-mean(iris$Petal.Length[51:100])
-
-# Virginica
-mean(iris$Sepal.Length[101:150])
-mean(iris$Petal.Length[101:150])
-```
 
 ### Questão 9
 
-**Descrição:**  
-(Inclua a descrição e o código para a Questão 9)
+
 
 ### Questão 10
 
-**Descrição:**  
-(Inclua a descrição e o código para a Questão 10)
+
 
 ### Questão 11
 
-**Descrição:**  
-(Inclua a descrição e o código para a Questão 11)
+
 
 ### Questão 12
 
-**Descrição:**  
-(Inclua a descrição e o código para a Questão 12)
 
 ### Questão 13
 
-**Descrição:**  
-(Inclua a descrição e o código para a Questão 13)
+
 
 ### Questão 14
 
-**Descrição:**  
-(Inclua a descrição e o código para a Questão 14)
+
 
 ### Questão 15
 
-**Descrição:**  
-(Inclua a descrição e o código para a Questão 15)
+
+
