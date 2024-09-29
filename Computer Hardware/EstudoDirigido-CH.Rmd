@@ -1,4 +1,3 @@
-
 ---
 title: "Análise de Dados - Aula 1"
 author: "Ítalo e José Antonio"
@@ -12,79 +11,95 @@ output:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(knitr)
 ```
 
-### Questão 1
+### Questão 1 - ok
 
 **Descrição:**  
-Nesta questão, carregamos o conjunto de dados `iris` e visualizamos sua estrutura utilizando a função `View()`.
+O domínio do problema é a Ciência da Computação, focando no desempenho de hardware de computadores. O conhecimento esperado envolve dados de desempenho relativo da CPU, descritos em termos de tempo de ciclo, tamanho de memória, etc.
 
 ```{r}
-# Carregar os dados da arquivo para um dataset - computer+hardware
-data <- read.table("C:/Users/2019101100910126/Documents/Github/EstudoDirigindo-MinecaoDeDados/Computer Hardware/computer+hardware/machine.data", header=FALSE, sep=",")
-
-
-# Visualizar o dataset
-View(data)
-
-
-
+# C:/Users/2019101100910126/Documents/Github/EstudoDirigindo-MinecaoDeDados/Computer Hardware/computer+hardware/machine.data
+computer_data <- read.table("C:/Users/josej/OneDrive/Documentos/GitHub/EstudoDirigindo-MinecaoDeDados/Computer Hardware/computer+hardware/machine.data", header=FALSE, sep=",")
+colnames(computer_data) <- c("VendorName", "ModelName", "MYCT", "MMIN", "MMAX", "CACH", "CHMIN", "CHMAX", "PRP", "ERP")
+View(computer_data)
 ```
 
-### Questão 2
+### Questão 2 - ok
 
 **Descrição:**  
-Aqui, utilizamos as funções `dim()`, `nrow()` e `ncol()` para verificar as dimensões do conjunto de dados, o número de linhas e o número de colunas.
+Aqui, utilizamos as funções `dim()`, `nrow()` e `ncol()` temos o numero de amostra de 209 e o numero de variaveis de 10
 
 ```{r}
-# Verificar dimensões do dataset
-dim(iris)
-
-# Número de linhas
-nrow(iris)
-
-# Número de colunas
-ncol(iris)
+print(paste('Número de linhas(amostras):', nrow(computer_data)))
+print(paste('Número de colunas(variaveis):', ncol(computer_data)))
 ```
 
-### Questão 3
+### Questão 3 - ok
 
 **Descrição:**  
-Utilizamos a função `str()` para exibir a estrutura do conjunto de dados `iris`, o que nos permite observar os tipos de variáveis e os primeiros valores de cada uma.
+Utilizamos a função `str()` para exibir a estrutura do conjunto de dados.
 
 ```{r}
 # Exibir a estrutura do dataset
-str(iris)
+str(computer_data)
+```
+A maioria dos campos vieram com seus datatype certos, menos os dois primeiros, que vieram como chr entao vou fazer a tranformação dele para factor(Variável categórica)
+```{r}
+# Transformando colunas de character para factor
+computer_data$VendorName <- as.factor(computer_data$VendorName)
+computer_data$ModelName <- as.factor(computer_data$ModelName)
+
+# Exibir a estrutura do dataset com as alterações feitas
+str(computer_data)
 ```
 
-### Questão 4
+### Questão 4 - ok
 
 **Descrição:**  
-Nesta etapa, adicionamos dados ausentes ao conjunto de dados e em seguida removemos a linha adicional. Após isso, usamos a função `summary()` para gerar um resumo estatístico.
+Usado a função `summary()` temos resumo estatístico do dataframe, mas para garantir que nao exista valore NA, uma funcao de soma(sum) que vai contar a quantidade de valores NA no dataframe.
 
 ```{r}
-# Adicionar uma linha com dados ausentes
-# iris <- rbind(iris, c(5.86, NA, NA, 1.89, as.factor("virginica")))
-
-# Remover a última linha (caso tenhamos adicionado)
-# iris <- iris[-151,]
-
 # Resumo do dataset
-summary(iris)
+summary(computer_data)
+
+# Contar o número total de NAs
+quant_na <- sum(is.na(computer_data))
+
+# Exibir o total de NAs
+print(paste("Quantidade de dados ausentes(NA):", quant_na))
 ```
 
-### Questão 5
+### Questão 5 - Parei aqui, comentar sobre o segundo caso abaixo!!!
 
 **Descrição:**  
-Aqui, usamos a função `summary()` para obter um resumo estatístico e calcular a porcentagem de valores ausentes.
+Aqui, fiz uma contagem de amostra para cada classe, primeiro de VendorName e depos de ModelName
 
 ```{r}
-# Resumo estatístico dos dados
-summary(iris)
+# Contar amostras em cada classe
+count_VendorName <- table(computer_data$VendorName)
 
-# Cálculo da porcentagem de valores ausentes (NA) em cada coluna
-na_percent <- sapply(iris, function(x) sum(is.na(x)) / length(x) * 100)
-na_percent
+# Criar um data frame organizado
+df_porcentagem_VendorName <- data.frame(
+  porcentagem = round(((count_VendorName / sum(count_VendorName)) * 100), 2)
+)
+
+kable(df_porcentagem_VendorName, caption = "Porcentagem da Classe: Vendor_Name")
+
+
+```
+
+```{r}
+# Contar amostras em cada classe
+count_ModelName <- table(computer_data$ModelName)
+
+# Criar um data frame organizado
+df_porcentagem_ModelName <- data.frame(
+  porcentagem = round(((count_ModelName / sum(count_ModelName)) * 100), 2)
+)
+
+kable(head(df_porcentagem_ModelName, 10), caption = "Porcentagem da Classe: Model_Name")
 ```
 
 ### Questão 6
