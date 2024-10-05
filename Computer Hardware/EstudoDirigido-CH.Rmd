@@ -12,6 +12,10 @@ output:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(knitr)
+# install.packages("dplyr")
+library(dplyr)
+# install.packages("scales")
+library(scales)
 ```
 
 ### Questão 1 - ok
@@ -71,11 +75,13 @@ quant_na <- sum(is.na(computer_data))
 print(paste("Quantidade de dados ausentes(NA):", quant_na))
 ```
 
-### Questão 5 - Parei aqui, comentar sobre o segundo caso abaixo!!!
+### Questão 5 - ok
 
 **Descrição:**  
 Aqui, fiz uma contagem de amostra para cada classe, primeiro de VendorName e depos de ModelName
 
+#### VendorName
+Nessa coluna/variavel foi possivel fazer a contagem de amostras sem grandes questoes e foi possivel demostrar as ammostras mais repetivas e seus valores.
 ```{r}
 # Contar amostras em cada classe
 count_VendorName <- table(computer_data$VendorName)
@@ -85,27 +91,79 @@ df_porcentagem_VendorName <- data.frame(
   porcentagem = round(((count_VendorName / sum(count_VendorName)) * 100), 2)
 )
 
+colnames(df_porcentagem_VendorName) <- c("Amostra", "Porcentagem")
+
+df_porcentagem_VendorName <- df_porcentagem_VendorName %>%
+  arrange(desc(Porcentagem))
+
+df_porcentagem_VendorName$Porcentagem <- percent(df_porcentagem_VendorName$Porcentagem / 100)
+
+
 kable(df_porcentagem_VendorName, caption = "Porcentagem da Classe: Vendor_Name")
 
 
 ```
 
+#### ModelName
+Nessa coluna/variavel o nome do medelo nao se repete oque, deixar essa analise de quantidades de valores iguais inutil, já que todos as amostras de campo vão ser unicas para cada resgitros, vou imprimir apenas alguns resgistro para dar de exeplo.
 ```{r}
 # Contar amostras em cada classe
 count_ModelName <- table(computer_data$ModelName)
 
 # Criar um data frame organizado
 df_porcentagem_ModelName <- data.frame(
-  porcentagem = round(((count_ModelName / sum(count_ModelName)) * 100), 2)
+  porcentagem = count_ModelName
 )
 
-kable(head(df_porcentagem_ModelName, 10), caption = "Porcentagem da Classe: Model_Name")
+colnames(df_porcentagem_ModelName) <- c("Amostra", "Contagem")
+
+kable(head(df_porcentagem_ModelName, 20), caption = "Porcentagem da Classe: Model_Name")
 ```
 
 ### Questão 6
 
 **Descrição:**  
-(Inclua a descrição e o código para a Questão 6)
+O balaceamento dos dados podem ser feitos na visao de vendores, assim pensando qual vendendor tem mais amostras e se as amostra entao baleacadas entre vendedores, entao vou pegar todos os vendedores e fazer alguns graficos apenas para deixa mais visual.
+
+Pegar o numero de amostra de cada vendendor:
+```{r}
+# Contar amostras em cada classe
+count_VendorName <- table(computer_data$VendorName)
+
+# Ver as contagens de cada classe
+print(count_VendorName)
+```
+
+Vou imprimir um grafico em barras para monstrar visualmente a quantidade de amostra para cada vendendor
+```{r}
+# porcentagem de cada classe
+percent_VendorName <- prop.table(count_VendorName) * 100
+
+barplot(count_VendorName, main = "Distribuição das Classes: VendorName", ylab = "Número de Amostras", col = "lightblue", las = 2)
+
+mtext("Classes", side = 1, line = 5)  # line controla a posição vertical do texto
+```
+
+O grafico de barras ficou com todos os vendendores entao um grafico em pizza com os com maior numero de registro e todos os restate pode ser mais facil visual como está o balaceamento dos dados.
+```{r}
+# ---> Grafico Pizza
+# Ordenar as classes por tamanho (frequência) em ordem decrescente
+sorted_VendorName <- sort(count_VendorName, decreasing = TRUE)
+
+# Selecionar as 10 maiores classes
+top_10 <- head(sorted_VendorName, 10)
+
+# Contar o número de classes que estão sendo agrupadas em "Outros"
+others_count <- length(tail(sorted_VendorName, length(sorted_VendorName) - 10))
+
+# Combinar as 10 maiores com a soma dos outros
+top_10_with_others <- c(top_10, Outros = sum(tail(sorted_VendorName, length(sorted_VendorName) - 10)))
+
+labels <- c(names(top_10), paste("Outros (", others_count, " classes)", sep=""))
+
+pie(top_10_with_others, main = "Top 10 Classes e Outros", col = rainbow(length(top_10_with_others)), labels = labels)
+
+```
 
 ### Questão 7
 
