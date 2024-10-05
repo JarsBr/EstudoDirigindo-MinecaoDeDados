@@ -1,14 +1,11 @@
 ---
 title: "Estudo Dirigido - Glass Identification"
-author: "Ítalo e José Antonio"
+author: "Ítalo Gonçalves e José Antonio"
 date: "06/10/2024"
 output: pdf_document
 ---
 
 ```{r, echo=FALSE}
-### Instalar pacotes necessários
-installed.packages(mlbench)
-
 ### Carregar pacotes necessários
 library(mlbench)
 
@@ -16,8 +13,17 @@ library(mlbench)
 data("Glass", package = "mlbench")
 ```
 
-### Questão 1
-A base de dados **Glass Identification** é usada para classificar diferentes tipos de vidro com base em suas propriedades químicas, o que é útil em investigações criminais. Ao analisar fragmentos de vidro encontrados em cenas de crime, é possível identificar sua origem e ligá-los a um local ou suspeito. A base de dados contém variáveis que medem a quantidade de diferentes óxidos químicos presentes nas amostras de vidro, ajudando a distinguir entre os tipos.
+## Sobre a base de dados <!-- Questão 1 -->
+
+A base de dados **Glass Identification** é usada para classificar diferentes tipos de vidro com base em suas propriedades químicas, o que é útil em investigações criminais. Ao analisar fragmentos de vidro encontrados em cenas de crime, é possível identificar sua origem e ligá-los a um local ou suspeito. A base de dados contém variáveis que medem a quantidade de diferentes óxidos químicos presentes nas amostras de vidro, ajudando a distinguir entre os tipos, sendo eles:
+
+- Sódio (Na)
+- Magnésio (Mg)
+- Alumínio (Al)
+- Silício (Si)
+- Cálcio (Ca)
+- Bário (Ba)
+- Ferro (Fe)
 
 O objetivo principal desse estudo é determinar se o vidro pertence a janelas produzidas pelo método de "float glass" ou a outro tipo. Essa classificação é feita com base em padrões químicos, usando três métodos de análise para melhorar a precisão na identificação. Para isso, foi realizada uma análise com três métodos de classificação:
 
@@ -27,7 +33,7 @@ O objetivo principal desse estudo é determinar se o vidro pertence a janelas pr
 
 A seguir, o gráfico mostra esses resultados:
 
-```{r, echo=FALSE, fig.width=5, fig.height=3}
+```{r, echo=FALSE, fig.width=4, fig.height=2}
 ### Dados dos erros de classificação
 erros_classificacao <- data.frame(
   Method = c("Beagle", "Beagle", "NN", "NN", "DA", "DA"),
@@ -39,71 +45,103 @@ erros_classificacao <- data.frame(
 library(ggplot2)
 ggplot(erros_classificacao, aes(x = Method, y = Errors, fill = Glass_Type)) +
   geom_bar(stat = "identity", position = "dodge") +
-  labs(title = "Erros de Classificação por Método e Tipo de Vidro",
+  labs(title = "Erros de Classif. por Método e Tipo de Vidro",
        x = "Método de Classificação", y = "Número de Erros") +
   theme_minimal()
 ```
 
 
-### Questão 2
+## Dimensionalidade dos Dados <!-- Questão 2 -->
 
 ```{r, echo=TRUE}
 dim(Glass)
 ```
 
-Essa base de dados possui 214 amostras e 10 variáveis. Cada variável representa uma característica química ou física dos fragmentos de vidro, sendo a última variável uma classe, sendo o tipo de vidro.
+Essa base de dados possui 214 amostras e 10 variáveis. E cada variável representa uma característica química ou física dos fragmentos de vidro, sendo a última variável uma classe, sendo o tipo do vidro.
 
 
-### Questão 3
+## Análise Estrutural das Variáveis <!-- Questão 3 -->
 
+Utilizando a função `str()` nos dá uma visão geral da base de dados, como o tipo de cada variável e uma amostra de seus valores:
+
+```{r, echo=TRUE}
 str(Glass)
+```
 
+A partir dessa análise, podemos ver que todas as variáveis são do tipo numérico, exceto a variável TYPE, que é um fator com 6 níveis, representando as diferentes categorias de vidro.
+
+### Distribuição das Classes 
+
+Agora, utilizando a função `table()`, nos permite ver o número de amostras presentes em cada classe de vidro:
+
+```{r, echo=TRUE}
 table(Glass$Type)
+```
+
+Os resultados mostram a quantidade de amostras em cada 1 das 6 classes de vidro, com isso podemos ver que as classes 1 e 2, correspondentes ao vidro de construção de janelas, são as mais frequentes, enquanto as outras classes têm uma quantidade menor de amostras.
 
 
-### Questão 4
+## Integridade da base de dados <!-- Questão 4, 5 e 6 -->
+
+Para verificar a integridade da base de dados e identificar se há valores ausentes (NA), utilizamos de duas formas para essa verificação, a função summary(glass), que fornece um resumo das variáveis, permitindo identificar se há ou não valores NA.
+
+```{r, echo=TRUE}
+summary(Glass)
+```
+
+E como segundo método, de uma forma mais direta, usamos a seguinte função para mostrar se há algum valor NA nesta base:
+
+```{r, echo=TRUE}
+sum(is.na(Glass))
+```
+
+Após  essa verificação, pode-se dizer que não há dados ausentes na base de dados, ou seja todas as amostras desta base estão completas. Portanto, não é necessário retirar nenhuma  amostra.
+
+### Porcentagem dos dados
+
+Além disso, também calculei a porcentagem de cada tipo em relação ao total de amostras. O código utilizado para essa análise foi:
+
+```{r, echo=TRUE}
+round(prop.table(table(Glass$Type)) * 100, 2)
+```
+
+Com base nos resultados, observamos que a base de dados apresenta um desequilíbrio significativo, uma vez que a classe com a maior porcentagem representa 32,71% do total de amostras, enquanto a classe com a menor porcentagem corresponde apenas a 4,21%.
 
 
-
-### Questão 5
-
-
-
-### Questão 6
-
-
-
-### Questão 7
-
-
-### Questão 8
-
-
-
-### Questão 9
-
-
-
-### Questão 10
-
-
-
-### Questão 11
-
-
-
-### Questão 12
-
-
-### Questão 13
+### Balanceamento dos dados
 
 
 
-### Questão 14
+## Problemas de Regressão <!-- Questão 7, 8 e 9 -->
 
 
 
-### Questão 15
+### Análise de Outliers
+
+
+
+## Análise Descritiva das Variáveis <!-- Questão 9 e 10 -->
+
+
+
+## Análise de Correlação <!-- Questão 11 -->
+
+
+
+## Pré-processamento e Padrões Esperados <!-- Questão 12 e 13 -->
+
+
+
+## Estudos sobre a base de dados <!-- Questão 14 -->
+
+
+
+
+
+
+
+
+
 
 
 
