@@ -16,6 +16,8 @@ library(knitr)
 library(dplyr)
 # install.packages("scales")
 library(scales)
+# install.packages("ggplot2")
+library(ggplot2)
 ```
 
 ### Questão 1 - ok
@@ -123,7 +125,7 @@ kable(head(df_porcentagem_ModelName, 20), caption = "Porcentagem da Classe: Mode
 ### Questão 6
 
 **Descrição:**  
-O balaceamento dos dados podem ser feitos na visao de vendores, assim pensando qual vendendor tem mais amostras e se as amostra entao baleacadas entre vendedores, entao vou pegar todos os vendedores e fazer alguns graficos apenas para deixa mais visual.
+O balaceamento dos dados podem ser feitos na visao de vendores, assim pensando qual vendendor tem mais amostras e se as amostra entao baleacadas entre vendedores, entao vou pegar todos os vendedores e fazer alguns graficos apenas para deixa mais visual. Existe uma numero muito maior de amostras de vendores maiores.
 
 Pegar o numero de amostra de cada vendendor:
 ```{r}
@@ -164,66 +166,193 @@ labels <- c(names(top_10), paste("Outros (", others_count, " classes)", sep=""))
 pie(top_10_with_others, main = "Top 10 Classes e Outros", col = rainbow(length(top_10_with_others)), labels = labels)
 
 ```
-
 ### Questão 7
 
 **Descrição:**  
-(Inclua a descrição e o código para a Questão 7)
+Para calcular a média e o desvio padrão vou usar as funções mean() e sd(). Vou demosntrar para cada variavel:
+
+#### MYCT
+```{r}
+media_MYCT <- mean(computer_data$MYCT)
+
+desvio_padrao_MYCT <- sd(computer_data$MYCT)
+
+print(paste("Média dos valores esperados (MYCT):", round(media_MYCT, 2)))
+print(paste("Desvio padrão dos valores esperados (MYCT):", round(desvio_padrao_MYCT, 2)))
+
+```
+
+#### MMIN
+```{r}
+media_MMIN <- mean(computer_data$MMIN)
+
+desvio_padrao_MMIN <- sd(computer_data$MMIN)
+
+print(paste("Média dos valores esperados (MMIN):", round(media_MMIN, 2)))
+print(paste("Desvio padrão dos valores esperados (MMIN):", round(desvio_padrao_MMIN, 2)))
+```
+
+#### MMAX
+```{r}
+media_MMAX <- mean(computer_data$MMAX)
+
+desvio_padrao_MMAX <- sd(computer_data$MMAX)
+
+print(paste("Média dos valores esperados (MMAX):", round(media_MMAX, 2)))
+print(paste("Desvio padrão dos valores esperados (MMAX):", round(desvio_padrao_MMAX, 2)))
+```
+
+#### CACH
+```{r}
+media_CACH <- mean(computer_data$CACH)
+
+desvio_padrao_CACH <- sd(computer_data$CACH)
+
+print(paste("Média dos valores esperados (CACH):", round(media_CACH, 2)))
+print(paste("Desvio padrão dos valores esperados (CACH):", round(desvio_padrao_CACH, 2)))
+
+```
+
+#### CHMIN
+```{r}
+media_CHMIN <- mean(computer_data$CHMIN)
+
+desvio_padrao_CHMIN <- sd(computer_data$CHMIN)
+
+print(paste("Média dos valores esperados (CHMIN):", round(media_CHMIN, 2)))
+print(paste("Desvio padrão dos valores esperados (CHMIN):", round(desvio_padrao_CHMIN, 2)))
+```
+
+#### CHMAX
+```{r}
+media_CHMAX <- mean(computer_data$CHMAX)
+
+desvio_padrao_CHMAX <- sd(computer_data$CHMAX)
+
+print(paste("Média dos valores esperados (CHMAX):", round(media_CHMAX, 2)))
+print(paste("Desvio padrão dos valores esperados (CHMAX):", round(desvio_padrao_CHMAX, 2)))
+```
+
+#### PRP
+```{r}
+media_PRP <- mean(computer_data$PRP)
+
+desvio_padrao_PRP <- sd(computer_data$PRP)
+
+print(paste("Média dos valores esperados (PRP):", round(media_PRP, 2)))
+print(paste("Desvio padrão dos valores esperados (PRP):", round(desvio_padrao_PRP, 2)))
+```
+
+#### ERP
+```{r}
+media_ERP <- mean(computer_data$ERP)
+
+desvio_padrao_ERP <- sd(computer_data$ERP)
+
+print(paste("Média dos valores esperados (ERP):", round(media_ERP, 2)))
+print(paste("Desvio padrão dos valores esperados (ERP):", round(desvio_padrao_ERP, 2)))
+```
 
 ### Questão 8
 
 **Descrição:**  
-Calculamos as médias, os valores mínimos e máximos das variáveis `Sepal.Length` e `Petal.Length` para as espécies `setosa`, `versicolor` e `virginica`.
-
-```{r}
-# Setosa
-mean(iris$Sepal.Length[1:50])
-mean(iris$Petal.Length[1:50])
-min(iris$Sepal.Length[1:50])
-min(iris$Petal.Length[1:50])
-max(iris$Sepal.Length[1:50])
-max(iris$Petal.Length[1:50])
-
-# Versicolor
-mean(iris$Sepal.Length[51:100])
-mean(iris$Petal.Length[51:100])
-
-# Virginica
-mean(iris$Sepal.Length[101:150])
-mean(iris$Petal.Length[101:150])
-```
+Não encontrei nenhum outlier nos valores da variável ERP, significa que todos os dados estão dentro do intervalo esperado. A ausência de outliers significa que os dados estão bem distribuídos e não há valores extremos que possam distorcer a análise.
 
 ### Questão 9
 
 **Descrição:**  
-(Inclua a descrição e o código para a Questão 9)
+Vou usar min(), max(), mean(), e sd() para cada variável que é numérica. E colocar as informações em um formato de tabela para ficar mais fácil visualizar. Como temos variáveis categóricas e numéricas, vou focar nas variáveis numéricas para essa análise
+
+```{r}
+tabela_descritiva <- data.frame(
+  Variável = c("MYCT", "MMIN", "MMAX", "CACH", "CHMIN", "CH MAX", "PRP", "ERP"),
+  Mínimo = c(min(computer_data$MYCT), min(computer_data$MMIN), min(computer_data$MMAX), 
+             min(computer_data$CACH), min(computer_data$CHMIN), min(computer_data$CHMAX), 
+             min(computer_data$PRP), min(computer_data$ERP)),
+  Máximo = c(max(computer_data$MYCT), max(computer_data$MMIN), max(computer_data$MMAX), 
+             max(computer_data$CACH), max(computer_data$CHMIN), max(computer_data$CHMAX), 
+             max(computer_data$PRP), max(computer_data$ERP)),
+  Média = c(mean(computer_data$MYCT), mean(computer_data$MMIN), mean(computer_data$MMAX), 
+            mean(computer_data$CACH), mean(computer_data$CHMIN), mean(computer_data$CHMAX), 
+            mean(computer_data$PRP), mean(computer_data$ERP)),
+  Desvio_Padrão = c(sd(computer_data$MYCT), sd(computer_data$MMIN), sd(computer_data$MMAX), 
+                    sd(computer_data$CACH), sd(computer_data$CHMIN), sd(computer_data$CHMAX), 
+                    sd(computer_data$PRP), sd(computer_data$ERP))
+)
+print(tabela_descritiva)
+```
 
 ### Questão 10
 
 **Descrição:**  
-(Inclua a descrição e o código para a Questão 10)
+Vou fazer os seguintes graficos:
+ - Um gráfico de dispersão (scatter plot) para variáveis numéricas, usando cores para mapear as classes.
+ - Um grafico de boxplot para variáveis categóricas, novamente mapeando as classes por cores.
+Para o exemplo, vou usar as variáveis MYCT e PRP para o gráfico de dispersão, e um boxplot para PRP em relação a VendorName.
+```{r}
+ggplot(computer_data, aes(x = MYCT, y = PRP, color = VendorName)) +
+  geom_point() +
+  labs(title = "Relação entre MYCT e PRP", x = "MYCT (Tempo de Ciclo da Máquina)", y = "PRP (Desempenho Relativo Publicado)") +
+  theme_minimal() +
+  theme(legend.position = "right")
+
+ggplot(computer_data, aes(x = VendorName, y = PRP, fill = VendorName)) +
+  geom_boxplot() +
+  labs(title = "Distribuição do PRP por VendorName", x = "Nome do Fornecedor", y = "PRP (Desempenho Relativo Publicado)") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))  # Rotaciona os rótulos do eixo x
+```
 
 ### Questão 11
+**Descrição:** 
+Para descobrir a correlação entre as variáveis numéricas e a classe dos dados, vou usar a função cor() para calcular a correlação de cada variável com a classe alvo, no meu caso PRP.
+```{r}
+numericas <- computer_data[, sapply(computer_data, is.numeric)]
 
-**Descrição:**  
-(Inclua a descrição e o código para a Questão 11)
+correlacoes <- cor(numericas)
+
+correlacao_com_classe <- correlacoes[, "PRP"]
+
+print(correlacao_com_classe)
+```
+A análise de correlação revelou que as variáveis MMIN e MMAX apresentam correlações fortes e positivas com o PRP, indicando que um aumento na memória mínima e máxima está associado a um desempenho relativo melhor. A variável CACH também mostrou uma correlação positiva moderada, sugerindo que mais memória cache contribui para um desempenho superior. Em contrapartida, a variável MYCT tem uma correlação negativa com o PRP, o que significa que um tempo de ciclo maior está relacionado a um desempenho inferior. As variáveis CHMIN e CHMAX também mostraram correlações positivas moderadas, sugerindo que mais canais podem melhorar o desempenho. Finalmente, a correlação extremamente forte entre ERP e PRP indica que o desempenho estimado e o publicado estão alinhados, reforçando a consistência das medições de desempenho.
+
 
 ### Questão 12
 
 **Descrição:**  
-(Inclua a descrição e o código para a Questão 12)
+Com essa base de dados, é possível realizar modelagem preditiva para prever o desempenho relativo (PRP) das máquinas com base em suas características de hardware, além de análises exploratórias para entender as relações entre as variáveis. Também é viável identificar outliers e analisar tendências nas especificações de hardware ao longo do tempo.
+
+Antes de qualquer análise, é necessário realizar pré-processamentos, como a codificação de variáveis categóricas e a normalização das variáveis numéricas. Além disso, a identificação e o tratamento de outliers são importantes, assim como a divisão dos dados em conjuntos de treinamento e teste para validar modelos de aprendizado de máquina.
 
 ### Questão 13
 
 **Descrição:**  
-(Inclua a descrição e o código para a Questão 13)
+Espera-se encontrar padrões que relacionam as características de hardware das máquinas com seu desempenho relativo (PRP). Isso pode incluir a identificação de quais variáveis, como memória mínima, memória máxima e cache, têm maior impacto no desempenho. Além disso, pode-se observar como o tempo de ciclo da máquina (MYCT) afeta negativamente o desempenho, revelando insights sobre a eficiência do hardware.
 
 ### Questão 14
 
 **Descrição:**  
-(Inclua a descrição e o código para a Questão 14)
+
+| Artigo                                                  | Estatística Descritiva Relatada                                         | Pré-processamento dos Dados                | Objetivo da Análise                                      |
+|--------------------------------------------------------|--------------------------------------------------------------------------|-------------------------------------------|----------------------------------------------------------|
+| **Universum learning for SVM regression**              | Apresenta correlações entre variáveis e desempenho do modelo.         | Normalização dos dados, tratamento de outliers. | Propor uma nova formulação para problemas de regressão, incorporando amostras Universum para melhorar a precisão do modelo. |
+| **A greedy constructive algorithm for the optimization of neural network architectures** | Descrição das variáveis com medidas como média e desvio padrão.      | Ajuste nas arquiteturas da rede neural, otimização de hiperparâmetros. | Minimizando a complexidade das arquiteturas de redes neurais sem comprometer o desempenho preditivo. |
+
+
+Artigo	Estatística Descritiva Relatada	Pré-processamento dos Dados	Objetivo da Análise
+Universum learning for SVM regression	Apresenta correlações entre variáveis e desempenho do modelo.	Normalização dos dados, tratamento de outliers.	Propor uma nova formulação para problemas de regressão, incorporando amostras Universum para melhorar a precisão do modelo.
+A greedy constructive algorithm for the optimization of neural network architectures	Descrição das variáveis com medidas como média e desvio padrão.	Ajuste nas arquiteturas da rede neural, otimização de hiperparâmetros.	Minimizando a complexidade das arquiteturas de redes neurais sem comprometer o desempenho preditivo.
+Resumo das Conclusões
+Os estudos analisaram a base de dados em termos de como as variáveis impactam o desempenho do modelo de previsão. O primeiro artigo focou na aplicação de métodos de aprendizado que consideram amostras adicionais para enriquecer o processo de treinamento. O segundo estudo abordou a eficiência das redes neurais, buscando simplificar suas estruturas, mantendo a precisão nas previsões.
+
+Essas informações destacam a relevância da base de dados para a pesquisa em aprendizado de máquina e inteligência artificial, além de sugerir a importância de técnicas de pré-processamento na melhoria da performance dos modelos.
 
 ### Questão 15
 
 **Descrição:**  
-(Inclua a descrição e o código para a Questão 15)
+Na análise da base de dados de Hardware de Computadores, foi possível observar padrões significativos nas variáveis relacionadas ao desempenho do CPU, como a correlação entre MMAX, MMIN e CACH com a performance relativa. Essa análise destaca a importância de variáveis técnicas na avaliação do desempenho e sugere que a otimização e o aperfeiçoamento dessas características podem levar a melhores desempenhos em futuros desenvolvimentos de hardware. Além disso, a ausência de outliers e a distribuição equilibrada dos dados em várias classes indicam que a base é adequada para aplicações de modelagem preditiva.
+
+Em relação às experiências pessoais, o trabalho foi desafiador principalmente na etapa de pré-processamento dos dados, onde garantir a qualidade e a relevância das variáveis demandou atenção. As partes que mais chamaram minha atenção foram as correlações encontradas, que revelaram insights sobre como diferentes aspectos do hardware impactam o desempenho geral. Meus conhecimentos prévios em R e análise de dados facilitaram a manipulação da base e a criação de visualizações significativas. A interação com os colegas foi enriquecedora, pois pudemos compartilhar dicas e abordar dúvidas juntos, tornando o processo de aprendizado mais colaborativo.
+
+Para ações futuras, recomenda-se explorar modelos de machine learning para prever o desempenho com base nas características disponíveis, além de investigar outras bases de dados que possam complementar essa análise.
