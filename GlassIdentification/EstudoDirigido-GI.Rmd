@@ -4,9 +4,7 @@ author: "Ítalo Gonçalves e José Antonio"
 date: "06/10/2024"
 output:
   pdf_document: default
-  html_document:
-    df_print: paged
-  word_document: default
+  html_document: default
 ---
 
 
