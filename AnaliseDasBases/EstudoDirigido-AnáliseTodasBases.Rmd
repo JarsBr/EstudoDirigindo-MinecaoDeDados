@@ -1,0 +1,41 @@
+---
+title: "Estudo Dirigido - Análise de Todas as Bases"
+author: "Ítalo Gonçalves e José Antonio"
+date: "06/10/2024"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+  word_document: default
+---
+
+
+### Glass Identification Database
+
+A análise da base de dados Glass Identification nos permitiu identificar padrões importantes nas propriedades químicas dos diferentes tipos de vidro. Observamos que variáveis como o teor de Sódio (Na) e Silício (Si) desempenham um papel fundamental na distinção entre os tipos de vidro. Essas características químicas são essenciais para determinar se o vidro é do tipo "float", usado em janelas, ou outro tipo.
+
+Além disso, encontramos outliers em algumas variáveis, como Magnésio (Mg) e Sódio (Na), que se desviam significativamente das outras amostras. Esses valores atípicos podem indicar vidros com características especiais ou erros de medição, sendo pontos de atenção para estudos mais aprofundados.
+
+A boa notícia é que a base de dados está completa, sem valores ausentes, o que facilita a análise. No entanto, notamos que as classes estão desequilibradas, o que pode ser um desafio em modelos de classificação. Isso nos leva a considerar o uso de técnicas de balanceamento, como oversampling ou undersampling, para melhorar os resultados de futuros modelos preditivos.
+
+Quanto à nossa experiência com o trabalho, o pré-processamento e a identificação das correlações foram os pontos mais desafiadores. No entanto, os padrões que surgiram entre as variáveis e os tipos de vidro nos deram uma visão clara da importância dessas características na classificação do vidro. Nosso conhecimento prévio em R e análise de dados facilitou bastante o processo de interpretação e construção dos gráficos.
+
+Para futuros estudos, recomendamos a aplicação de modelos de machine learning para classificar os tipos de vidro, aproveitando as variáveis identificadas como mais relevantes. Além disso, técnicas para tratar o desequilíbrio de classes devem ser exploradas, bem como a normalização dos dados para otimizar os modelos preditivos.
+
+### Computer Hardware Database
+
+Na análise da base de dados de Hardware de Computadores, observamos padrões significativos nas variáveis relacionadas ao desempenho do CPU, como a correlação entre MMAX, MMIN e CACH com a performance relativa. Essa análise destaca a importância de variáveis técnicas na avaliação do desempenho e sugere que a otimização dessas características pode levar a melhorias em futuros desenvolvimentos de hardware. Além disso, a ausência de outliers e a distribuição equilibrada dos dados em várias classes indicam que a base é adequada para aplicações de modelagem preditiva.
+
+Em relação à nossa experiência com o trabalho, a etapa de pré-processamento foi a mais desafiadora, pois exigiu garantir a qualidade e a relevância das variáveis. O que mais nos chamou a atenção foram as correlações encontradas, que revelaram insights sobre como diferentes aspectos do hardware impactam o desempenho geral. Nosso conhecimento prévio em R e análise de dados facilitou a manipulação da base e a criação de visualizações significativas. A interação com os colegas foi enriquecedora, pois pudemos compartilhar dicas e resolver dúvidas juntos, tornando o processo de aprendizado mais colaborativo.
+
+Para ações futuras, recomendamos explorar modelos de machine learning para prever o desempenho com base nas características disponíveis, além de investigar outras bases de dados que possam complementar essa análise.
+
+
+### "Predict student performance in secondary education" Database
+
+A análise da base de dados sobre o desempenho dos estudantes revelou várias conclusões importantes. Observamos que variáveis como sexo, tempo de estudo e consumo de bebidas alcoólicas estão significativamente correlacionadas com as notas finais dos alunos. Por exemplo, o sexo feminino apresentou médias de notas finais mais altas em comparação com o sexo masculino. Além disso, estudantes que dedicam mais tempo aos estudos tendem a ter um desempenho melhor, sugerindo que estratégias eficazes de aprendizado são cruciais para o sucesso acadêmico. Esses padrões podem ajudar instituições de ensino a desenvolver políticas educacionais mais direcionadas, melhorando a eficácia do ensino.
+
+Durante a elaboração do relatório, enfrentamos alguns desafios, como a limpeza e o pré-processamento dos dados, que exigiram atenção aos detalhes e conhecimento em R. A parte que mais nos chamou a atenção foi a análise de correlação, que permitiu visualizar relações não evidentes à primeira vista. Nossa experiência prévia em análise estatística e programação em R foi fundamental para superar as dificuldades e desenvolver uma compreensão mais profunda do conjunto de dados.
+
+Para futuras análises, seria interessante aprofundar o estudo em variáveis qualitativas, como o ambiente familiar e a motivação dos alunos. A inclusão de dados mais variados poderia enriquecer ainda mais as conclusões. Além disso, a aplicação de técnicas de machine learning poderia aprimorar a previsão de desempenho acadêmico, oferecendo ferramentas valiosas para intervenções educativas.
+

@@ -1,12 +1,13 @@
-
 ---
-title: "Análise de Dados - Aula 1"
-author: "Ítalo e José Antonio"
-date: "`r Sys.Date()`"
-output: html_document
+title: "Estudo Dirigido - Predict student performance in secondary education"
+author: "Ítalo Gonçalves e José Antonio"
+date: "06/10/2024"
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+  word_document: default
 ---
-
-##### Análise de Dados - Aula 1 #####
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -19,9 +20,8 @@ library(scales)
 library(ggplot2)
 ```
 
-### Questão 1
+## Sobre a base de dados <!-- Questão 1 -->
 
-**Descrição:**  
 O domínio do problema na base de dados "Predict student performance in secondary education" é a análise de desempenho escolar de estudantes de duas escolas portuguesas. O tipo de conhecimento que se espera encontrar envolve identificar fatores demográficos, sociais e escolares que influenciam o desempenho acadêmico dos alunos, tanto em matemática quanto em português. Padrões de correlação entre notas (G1, G2 e G3), variáveis socioeconômicas e comportamentais podem ser explorados para prever o sucesso ou dificuldades dos estudantes ao longo do ano.
 
 Durante a junção das duas bases de dados, algumas variáveis podem aparecer com sufixos .x e .y, o que indica que a variável original estava presente em ambos os dataframes. O sufixo .x refere-se às variáveis do dataframe de Matemática, enquanto o sufixo .y corresponde às variáveis do dataframe de Português.
@@ -37,9 +37,8 @@ print(nrow(student_performance)) # 382 students
 View(student_performance)
 ```
 
-### Questão 2
+## Dimensionalidade dos Dados <!-- Questão 2 -->
 
-**Descrição:**  
 Aqui, ao utilizar as funções dim(), nrow() e ncol(), encontramos 382 amostras e 53 variáveis. Apesar da base de dados ter muitas variáveis, grande parte delas são do tipo True ou False, mesmo que não estejam formatadas como binárias ou booleanas. Achei a base interessante, com potencial para diversas análises diferentes.
 
 ```{r}
@@ -47,9 +46,8 @@ print(paste('Número de linhas(amostras):', nrow(student_performance)))
 print(paste('Número de colunas(variaveis):', ncol(student_performance)))
 ```
 
-### Questão 3
+## Análise Estrutural das Variáveis <!-- Questão 3 -->
 
-**Descrição:**  
 Utilizamos a função `str()` para exibir a estrutura do conjunto de dados.
 
 ```{r}
@@ -80,9 +78,8 @@ student_performance$romantic.x <- as.factor(student_performance$romantic.x)
 str(student_performance)
 ```
 
-### Questão 4
+## Integridade da base de dados <!-- Questão 4 -->
 
-**Descrição:**  
 Usado a função `summary()` temos resumo estatístico do dataframe, mas para garantir que nao exista valore NA, uma funcao de soma(sum) que vai contar a quantidade de valores NA no dataframe.
 
 ```{r}
@@ -96,9 +93,8 @@ quant_na <- sum(is.na(student_performance))
 print(paste("Quantidade de dados ausentes(NA):", quant_na))
 ```
 
-### Questão 5
+## Balanceamento dos dados <!-- Questão 5 e 6 -->
 
-**Descrição:**  
 Aqui, usamos a função `summary()` para obter um resumo estatístico e calcular a porcentagem de valores ausentes.
 
 ```{r}
@@ -134,9 +130,8 @@ kable(df_porcentagem_G3_x, caption = "Porcentagem da Classe: G3.x")
 kable(df_porcentagem_G3_y, caption = "Porcentagem da Classe: G3.y")
 ```
 
-### Questão 6
-**Descrição:**  
-(Inclua a descrição e o código para a Questão 6)
+Para avaliar o balanceamento dos dados, podemos analisar a distribuição das variáveis-alvo, como as notas finais (G3.x e G3.y), além de outras variáveis importantes como idade e sexo. Essa análise nos permite identificar possíveis desequilíbrios na quantidade de amostras entre diferentes categorias, o que pode influenciar a construção de modelos preditivos, especialmente em problemas de classificação, onde classes desbalanceadas podem impactar a precisão dos resultados.
+
 ```{r}
 # Contar amostras em cada classe para G3.x e G3.y
 count_G3_x <- table(student_performance$G3.x)
@@ -186,7 +181,9 @@ ggplot(df_porcentagem_G3_y, aes(x = Classe, y = Porcentagem)) +
 ```
 
 #### age_distribution
+
 Vou fazer uma analises para verficar como está a balaceamento de numero de amostras de dados em relacao a idade, pois mais para frente tenho a inteção de fazer algumas analises pensado na idade.
+
 ```{r}
 # Contar o número de amostras para cada idade
 age_distribution <- table(student_performance$age)
@@ -202,9 +199,8 @@ print(df_age_distribution)
 
 ```
 
-### Questão 7
+## Problemas de Regressão <!-- Questão 7 -->
 
-**Descrição:**  
 Para calcular a média e o desvio padrão vou usar as funções mean() e sd(). Vou demosntrar para apenas alguma variavel mais importantes/interessante na minha visão:
 Medu: Refere-se ao nível de educação da mãe, onde valores inteiros indicam anos de escolaridade.
 
@@ -299,9 +295,8 @@ cat("Walc.y - Média:", media_Walc_y, "Desvio Padrão:", desvio_Walc_y, "\n")
 ```
 
 
-### Questão 8
+## Análise de Outliers <!-- Questão 8 -->
 
-**Descrição:**  
 Para identificar outliers nas variáveis mais importantes, vou utilizar o gráfico boxplot.
 ```{r}
 # Carregar a biblioteca necessária
@@ -349,11 +344,13 @@ ggplot(student_performance, aes(x = "", y = Walc.y)) +
   labs(title = "Boxplot de Walc.y", y = "Walc.y") +
   theme_minimal()
 ```
+
 A análise dos boxplots para as variáveis importantes indicou que não há outliers significativos. Isso sugere que os dados estão dentro de uma faixa considerada normal para essas variáveis, sem valores extremos que possam distorcer a análise ou indicar possíveis anomalias nos dados.
 
-### Questão 9
+## Análise Descritiva das Variáveis <!-- Questão 9 -->
 
-**Descrição:**  
+Devemos realizar uma análise descritiva das variáveis numéricas, como as notas (G1, G2, G3), tempo de estudo e o nível de escolaridade dos pais (Medu, Fedu). As estatísticas descritivas incluem medidas como mínimo, máximo, média e desvio padrão. Isso permite entender a distribuição dos dados e identificar possíveis padrões que podem impactar o desempenho acadêmico dos estudantes, servindo como base para análises mais avançadas e modelos preditivos.
+
 ```{r}
 # Função para criar uma tabela de estatísticas descritivas
 descriptive_stats <- function(variable) {
@@ -386,10 +383,9 @@ tabela_resultados <- data.frame(
 print(tabela_resultados)
 ```
 
-### Questão 10
+## Gráficos das Variáveis por Classe <!-- Questão 10 -->
 
-**Descrição:**  
-(Inclua a descrição e o código para a Questão 10)
+Devemos explorar a relação entre variáveis e para isso criamos gráficos de barras e de dispersão são utilizados para analisar o comportamento das variáveis categóricas e numéricas, respectivamente. Esses gráficos facilitam a compreensão de como características como sexo, idade e notas anteriores se relacionam com o desempenho final dos alunos (G3), permitindo uma visualização clara de padrões e tendências nos dados.
 
 ```{r}
 library(ggplot2)
@@ -427,10 +423,10 @@ Consistência nas Notas: Observou-se que alunos que obtiveram uma boa nota na pr
 
 Idade e Desempenho: Apesar de as notas mais altas terem sido registradas para alunos de 15 a 16 anos, a maioria das amostras está na faixa etária de 16 a 17 anos. Essa concentração de dados pode gerar uma impressão distorcida sobre a relação entre idade e desempenho acadêmico. Portanto, embora a idade mais jovem possa estar associada a notas mais altas, essa análise deve ser vista com cautela devido à falta de diversidade nas amostras. Assim, a aparente tendência de que alunos mais novos tenham um desempenho melhor pode não ser generalizável.
 
-### Questão 11
+## Análise de Correlação <!-- Questão 11 -->
 
-**Descrição:**  
-Para ajudar a identificar quais variáveis têm maior influência na nota final G3, e assim facilitando a análise, vou separar em dois graficos, e vou pegar como foco a variavel G3, que seria a nota final
+Para ajudar a identificar quais variáveis têm maior influência na nota final G3, e assim facilitando a análise, vou separar em dois graficos, e vou pegar como foco a variavel G3, que seria a nota final.
+
 ```{r}
 # Calcular a correlação entre todas as variáveis numéricas e G3.x
 correlations_x <- cor(student_performance[, sapply(student_performance, is.numeric)], use = "complete.obs")
@@ -491,21 +487,15 @@ ggplot(cor_g3_y_df, aes(x = reorder(Variable, Correlation), y = Correlation)) +
   theme_minimal()
 ```
 
-### Questão 12
+## Pré-processamento e Padrões Esperados <!-- Questão 12 e 13 -->
 
-**Descrição:**  
 Com a base de dados student_performance, consigo realizar diversas análises que ajudam a entender o desempenho acadêmico dos alunos. Por exemplo, posso fazer uma análise descritiva para explorar variáveis como notas finais (G1, G2, G3), idade, sexo e situação familiar. Além disso, é possível avaliar a correlação entre variáveis, identificando quais fatores impactam diretamente nas notas finais. Também posso utilizar técnicas de modelagem preditiva para prever o desempenho de alunos com base em outras variáveis, o que pode ser útil para intervenções.
 
 Antes de realizar essas análises, é fundamental passar por um pré-processamento dos dados. Isso envolve tratar dados ausentes, codificar variáveis categóricas e normalizar as variáveis numéricas, se necessário. A identificação e o tratamento de outliers também são importantes, pois podem distorcer a análise. Essas etapas garantem que as análises e modelos gerados sejam mais precisos e confiáveis, permitindo que eu tire conclusões mais robustas sobre o desempenho acadêmico dos estudantes.
 
-### Questão 13
-
-**Descrição:**  
 Ao analisar a base de dados student_performance, espera-se identificar padrões relacionados ao desempenho acadêmico dos alunos. Um dos conhecimentos mais comuns é que fatores como idade, sexo e situação socioeconômica podem influenciar as notas.. Além disso, é possível observar a relação entre a frequência a atividades extracurriculares e o desempenho escolar, já que o envolvimento em atividades sociais e culturais muitas vezes está associado a melhores resultados acadêmicos.
 
-### Questão 14
-
-**Descrição:**  
+### Estudos de artigos sobre a base de dados <!-- Questão 14 -->
 
 | **Estudo**                                                                 | **Informações Relatadas**                                                                                        | **Objetivo da Análise**                                                                                                      |
 |---------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------|
@@ -516,14 +506,3 @@ No primeiro estudo, a ênfase foi na utilização de redes neurais para entender
 
 Esses estudos não apenas reforçam a relevância de entender a performance estudantil, mas também mostram como técnicas avançadas de análise de dados podem ser aplicadas para extrair insights valiosos sobre os fatores que afetam o aprendizado
 
-### Questão 15
-
-**Descrição:**  
-A análise da base de dados sobre o desempenho dos estudantes trouxe à tona várias conclusões importantes. Observamos que variáveis como o sexo, o tempo de estudo e o consumo de bebidas alcoólicas estão significativamente correlacionadas com as notas finais dos alunos. Por exemplo, o sexo feminino apresentou médias de notas finais mais altas em comparação com o sexo masculino. Além disso, os estudantes que dedicam mais tempo aos estudos tendem a ter um desempenho melhor, sugerindo que estratégias de aprendizado eficazes são cruciais para o sucesso acadêmico. A identificação de tais padrões pode ajudar instituições de ensino a desenvolverem políticas educacionais mais direcionadas, melhorando assim a eficácia do ensino.
-
-Para futuras análises, seria interessante aprofundar o estudo em variáveis não apenas quantitativas, mas também qualitativas, como o ambiente familiar e a motivação dos alunos. A inclusão de dados mais variados e representativos poderia enriquecer ainda mais as conclusões. Além disso, a aplicação de técnicas de machine learning poderia aprimorar a previsão de desempenho acadêmico, oferecendo ferramentas valiosas para intervenções educativas.
-
-Experiência com o Relatório:
-Durante a elaboração do relatório, enfrentei alguns desafios, como a limpeza e o pré-processamento dos dados, que exigiram atenção aos detalhes e um bom conhecimento de R. A parte que mais me chamou a atenção foi a análise de correlação, pois me permitiu visualizar relações que não eram evidentes à primeira vista. Minha experiência anterior com análise estatística e programação em R foi fundamental para superar as dificuldades e desenvolver um entendimento mais profundo do conjunto de dados.
-
-A interação com meus colegas foi muito positiva, permitindo trocas de ideias e insights que enriqueceram o processo de análise. A colaboração facilitou a resolução de problemas e a aplicação de diferentes perspectivas na interpretação dos dados. Isso não só melhorou a qualidade do relatório final, mas também contribuiu para um aprendizado coletivo sobre análise de dados e estatísticas aplicadas.

@@ -2,8 +2,13 @@
 title: "Estudo Dirigido - Glass Identification"
 author: "Ítalo Gonçalves e José Antonio"
 date: "06/10/2024"
-output: pdf_document
+output:
+  pdf_document: default
+  html_document:
+    df_print: paged
+  word_document: default
 ---
+
 
 ```{r, echo=FALSE}
 ### Carregar pacotes necessários
@@ -97,47 +102,168 @@ sum(is.na(Glass))
 
 Após  essa verificação, pode-se dizer que não há dados ausentes na base de dados, ou seja todas as amostras desta base estão completas. Portanto, não é necessário retirar nenhuma  amostra.
 
-### Porcentagem dos dados
+### Balanceamento dos dados
 
-Além disso, também calculei a porcentagem de cada tipo em relação ao total de amostras. O código utilizado para essa análise foi:
+Para identificar o balanceamento da base de dados, calculamos a porcentagem de cada classe em relação ao total de amostras usando a função prop.table. A fórmula utilizada foi:
 
 ```{r, echo=TRUE}
 round(prop.table(table(Glass$Type)) * 100, 2)
 ```
 
-Com base nos resultados, observamos que a base de dados apresenta um desequilíbrio significativo, uma vez que a classe com a maior porcentagem representa 32,71% do total de amostras, enquanto a classe com a menor porcentagem corresponde apenas a 4,21%.
-
-
-### Balanceamento dos dados
-
+E com base nos resultados, podemos ver um desequilíbrio entre as classes, com a classe mais frequente representando 32,71% das amostras, enquanto a classe menos frequente representa apenas 4,21%, pOr isso sugere que os dados não estão balanceados.
 
 
 ## Problemas de Regressão <!-- Questão 7, 8 e 9 -->
 
+Para problemas de regressão, devemos calcular as médias e desvios-padrão de todas as variáveis numéricas. Para isso utilizamos o código utilizado para essa análise logo abaixo:
 
+```{r, echo=FALSE}
+media <- round(sapply(Glass[, sapply(Glass, is.numeric)], mean, na.rm = TRUE), 2)
+desvio_padrao <- round(sapply(Glass[, sapply(Glass, is.numeric)], sd, na.rm = TRUE), 2)
+estatisticas <- data.frame(
+  Média = media,
+  Desvio_Padrão = desvio_padrao
+)
+print(estatisticas)
+```  
 
 ### Análise de Outliers
 
+Os outliers podem influenciar significativamente a análise de dados, especialmente em problemas de classificação. Para identificar os outliers na base de dados, criamos gráficos de boxplot para cada uma das variáveis, que podem ajudar a visualizar a distribuição dos dados, identificando valores atípicos (outliers) que se encontram fora dos limites interquartis.
+
+```{r, echo=TRUE}
+numeric_vars <- Glass[, sapply(Glass, is.numeric)]
+par(mfrow = c(3, 3))  
+for (i in 1:ncol(numeric_vars)) {
+  boxplot(numeric_vars[, i], main = colnames(numeric_vars)[i], col = "lightblue", border = "blue")
+}
+```
+
+Esse código cria boxplots para cada variável numérica da base de dados, o que facilita a identificação de valores fora da faixa esperada. Valores que estão além dos limites superior e inferior do boxplot (geralmente 1,5 vezes o intervalo interquartil) são considerados outliers. 
+
+Sendo assim, os gráficos mostram que algumas variáveis apresentam outliers evidentes, como **Sódio (Na)** e **Magnésio (Mg)** possuem valores que claramente se afastam da maioria das amostras.
 
 
 ## Análise Descritiva das Variáveis <!-- Questão 9 e 10 -->
 
+Na análise descritiva, faremos uma análise descritiva para cada variável, incluindo os valores mínimo, máximo, média e desvio padrão, separando os dados por classes. Aqui, estamos interessados nas características numéricas do conjunto de dados em função da variável de classe (o tipo de vidro). Como podemos ver logo abaixo:
+
+```{r, echo=FALSE, message=FALSE}
+library(dplyr)
+
+stats_by_class <- Glass %>%
+  group_by(Type) %>%
+  summarise(across(where(is.numeric), list(
+    Min = min,
+    Max = max,
+    Média = mean,
+    `Desvio Padrão` = sd
+  ), .names = "{.col}_{.fn}"))
+
+stats_by_class
+```
+
+Essa tabela mostra como os valores de cada variável variam entre as classes. A partir dela, podemos identificar como as propriedades químicas distinguem os diferentes tipos de vidro.
+
+### Gráficos das Variáveis por Classe
+
+Para visualizar melhor como as variáveis se comportam em relação às classes de vidro, podemos usar gráficos de dispersão, onde mapeamos cada variável em relação à classe.
+
+```{r, echo=FALSE, message=FALSE}
+library(ggplot2)
+ggplot(Glass, aes(x = Na, y = Mg, color = as.factor(Type))) +
+  geom_point() +
+  labs(title = "Distribuição de Sódio e Magnésio por Classe de Vidro",
+       x = "Sódio (Na)",
+       y = "Magnésio (Mg)",
+       color = "Tipo de Vidro") +
+  theme_minimal()
+
+ggplot(Glass, aes(x = Al, y = Si, color = as.factor(Type))) +
+  geom_point() +
+  labs(title = "Distribuição de Alumínio e Silício por Classe de Vidro",
+       x = "Alumínio (Al)",
+       y = "Silício (Si)",
+       color = "Tipo de Vidro") +
+  theme_minimal()
+```
+
+Esses gráficos de dispersão mostram como algumas variáveis se agrupam por classe, o que sugere que as propriedades químicas são bons indicadores para a classificação do vidro. 
+
+E os resultados mostram que variáveis como **Na**, **Mg**, **Al** e **Si** têm padrões distintos que ajudam a diferenciar as classes, por isso essa visualização facilita a compreensão de como cada amostra está distribuída e como as classes se separam com base nas características químicas.
 
 
 ## Análise de Correlação <!-- Questão 11 -->
 
+A correlação entre as variáveis numéricas da base de dados pode ajudar a entender como cada característica está relacionada com a classe de vidro, por isso, temos que calcular a matriz de correlação e visualizar um gráfico de correlação, como abaixo:
+
+
+```{r, echo=FALSE, message=FALSE}
+library(corrplot)
+
+Glass$Type_num<- as.numeric(as.factor(Glass$Type))
+
+numeric_vars <- c("Na", "Mg", "Al", "Si", "K", "Ca", "Ba", "Fe", "RI", "Type_num")
+
+cor_matrix <- cor(Glass[, numeric_vars], use = "complete.obs")
+
+
+corrplot(cor_matrix, method = "circle", type = "upper", tl.col = "black", tl.srt = 45, addCoef.col = "black")
+
+title("Matriz de Correlação das Variáveis Numéricas", line = 2.5)
+
+```
+
+Neste gráfico podemos perceber que a matriz de correlação acima mostra como cada variável numérica está relacionada tanto entre si quanto com a classe de vidro e os coeficientes de correlação variam entre -1 e 1, onde valores próximos de 1 indicam uma correlação positiva forte, e valores próximos de -1 indicam uma correlação negativa forte.
+ 
+E a variável de classe **TYPE** tem correlação com várias das variáveis químicas, como **Na**, **Mg**, e **Si**, sugerindo que essas variáveis são importantes na distinção dos tipos de vidro. Nos permitindo identificar quais variáveis têm maior influência sobre a classificação do vidro e podem ser boas opções para futuras classificações.
 
 
 ## Pré-processamento e Padrões Esperados <!-- Questão 12 e 13 -->
 
+Com essa análise identificamos que a base de dados não possui dados ausentes, mas apresenta desequilíbrio nas classes. Portanto, isso requer a aplicação de técnicas de balanceamento, como oversampling ou undersampling. Além disso, seria interessante testar normalizações nas variáveis numéricas para garantir que as diferenças nas escalas dos dados não influenciem negativamente os modelos.
 
+E sobre os padrãos, espera-se encontrar padrões relacionados à composição química dos vidros que ajudem a distinguir os diferentes tipos de vidro e a mineração de dados pode explorar essas características químicas para fornecer uma classificação precisa, ajudando em contextos forenses como ditos.
 
-## Estudos sobre a base de dados <!-- Questão 14 -->
+## Estudos de artigos sobre a base de dados <!-- Questão 14 -->
 
+```{r, echo=FALSE, message=FALSE}
+library(dplyr)
+library(kableExtra)
 
+artigos <- data.frame(
+  Titulo = c(
+    "Exploring the Power and Practical Applications of K-Nearest Neighbours (KNN) in Machine Learning",
+    "Glass recognition as a cutting-edge machine learning approach for identification and classification"
+  ),
+  
+  Estatistica_Descritiva = c(
+    "A base de dados UCI Glass Identification possui dez propriedades, uma das quais é o ID, que foi removido. Existem sete valores discretos na resposta do tipo de vidro. Os atributos incluem RI (índice de refração), Na (Sódio), Si (Silício), Mg (Magnésio), entre outros, que são medidos em peso percentual.",
+    "A base de dados contém 214 observações coletadas no Home Office Forensic Science Laboratory, Birmingham. As variáveis incluem componentes químicos como Sódio (Na), Magnésio (Mg), Cálcio (Ca), Bário (Ba), entre outros, além do índice de refração (RI). A classe dos vidros é representada por sete tipos, como janelas de edifícios (float e non-float) e faróis."
+  ),
+  
+  Pre_Processamento = c(
+    "O pré-processamento dos dados foi conduzido para verificar se havia valores ausentes, e o conjunto de dados foi transformado em formato ARFF. A validação cruzada estratificada de 10 vezes foi usada para reduzir a variância e fornecer uma estimativa precisa do desempenho.",
+    "O pré-processamento incluiu limpeza dos dados para corrigir erros, seleção de variáveis relevantes e visualização para identificar outliers e padrões. Técnicas de normalização e redução de dimensionalidade foram aplicadas antes do treinamento dos modelos de aprendizado de máquina."
+  ),
+  
+  Objetivo = c(
+    "O objetivo do estudo foi classificar amostras de vidro como 'float' ou não 'float', utilizando diferentes abordagens, como o algoritmo de K-vizinhos mais próximos (KNN), árvore de decisão C4.5 e K-Means. O estudo foi motivado por investigações criminais, onde a identificação correta do vidro é crucial.",
+    "O objetivo do estudo foi desenvolver um modelo de identificação e classificação de vidros usando redes neurais profundas e algoritmos de árvore de decisão, visando categorizar corretamente os diferentes tipos de vidro em investigações criminais e processos de tomada de decisão."
+  )
+)
 
-
-
+# Gerar a tabela estilizada
+artigos %>%
+  kbl(caption = "") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"),
+                full_width = TRUE,
+                font_size = 10) %>%
+  column_spec(1, width = "10em") %>%
+  column_spec(2, width = "15em") %>%
+  column_spec(3, width = "15em") %>%
+  column_spec(4, width = "25em")
+```
 
 
 
