@@ -164,8 +164,8 @@ top_10_with_others <- c(top_10, Outros = sum(tail(sorted_VendorName, length(sort
 labels <- c(names(top_10), paste("Outros (", others_count, " classes)", sep=""))
 
 pie(top_10_with_others, main = "Top 10 Classes e Outros", col = rainbow(length(top_10_with_others)), labels = labels)
-
 ```
+
 ### Questão 7
 
 **Descrição:**  

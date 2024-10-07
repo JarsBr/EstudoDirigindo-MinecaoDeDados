@@ -10,61 +10,90 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(knitr)
+# install.packages("dplyr")
+library(dplyr)
+# install.packages("scales")
+library(scales)
+# install.packages("ggplot2")
+library(ggplot2)
 ```
 
 ### Questão 1
 
 **Descrição:**  
-Nesta questão, carregamos o conjunto de dados `iris` e visualizamos sua estrutura utilizando a função `View()`.
+O domínio do problema na base de dados "Predict student performance in secondary education" é a análise de desempenho escolar de estudantes de duas escolas portuguesas. O tipo de conhecimento que se espera encontrar envolve identificar fatores demográficos, sociais e escolares que influenciam o desempenho acadêmico dos alunos, tanto em matemática quanto em português. Padrões de correlação entre notas (G1, G2 e G3), variáveis socioeconômicas e comportamentais podem ser explorados para prever o sucesso ou dificuldades dos estudantes ao longo do ano.
+
+Durante a junção das duas bases de dados, algumas variáveis podem aparecer com sufixos .x e .y, o que indica que a variável original estava presente em ambos os dataframes. O sufixo .x refere-se às variáveis do dataframe de Matemática, enquanto o sufixo .y corresponde às variáveis do dataframe de Português.
+
+Por exemplo, as colunas G3.x e G3.y representam as notas finais dos alunos em Matemática e Português, respectivamente. Essa nomenclatura permite manter a clareza e a integridade dos dados, possibilitando análises separadas e comparações entre o desempenho dos estudantes nas duas disciplinas.
 
 ```{r}
-# Carregar o dataset iris
-data(iris)
+d1=read.table("C:/Users/josej/OneDrive/Documentos/GitHub/EstudoDirigindo-MinecaoDeDados/OtherBase/student+performance/student-mat.csv",sep=";",header=TRUE)
+d2=read.table("C:/Users/josej/OneDrive/Documentos/GitHub/EstudoDirigindo-MinecaoDeDados/OtherBase/student+performance/student-por.csv",sep=";",header=TRUE)
 
-# Visualizar o dataset
-View(iris)
+student_performance = merge(d1,d2,by=c("school","sex","age","address","famsize","Pstatus","Medu","Fedu","Mjob","Fjob","reason","nursery","internet"))
+print(nrow(student_performance)) # 382 students
+View(student_performance)
 ```
 
 ### Questão 2
 
 **Descrição:**  
-Aqui, utilizamos as funções `dim()`, `nrow()` e `ncol()` para verificar as dimensões do conjunto de dados, o número de linhas e o número de colunas.
+Aqui, ao utilizar as funções dim(), nrow() e ncol(), encontramos 382 amostras e 53 variáveis. Apesar da base de dados ter muitas variáveis, grande parte delas são do tipo True ou False, mesmo que não estejam formatadas como binárias ou booleanas. Achei a base interessante, com potencial para diversas análises diferentes.
 
 ```{r}
-# Verificar dimensões do dataset
-dim(iris)
-
-# Número de linhas
-nrow(iris)
-
-# Número de colunas
-ncol(iris)
+print(paste('Número de linhas(amostras):', nrow(student_performance)))
+print(paste('Número de colunas(variaveis):', ncol(student_performance)))
 ```
 
 ### Questão 3
 
 **Descrição:**  
-Utilizamos a função `str()` para exibir a estrutura do conjunto de dados `iris`, o que nos permite observar os tipos de variáveis e os primeiros valores de cada uma.
+Utilizamos a função `str()` para exibir a estrutura do conjunto de dados.
 
 ```{r}
 # Exibir a estrutura do dataset
-str(iris)
+str(student_performance)
+```
+
+Nesse caso, as variáveis categóricas como school, sex, address, famsize, e outras variáveis com valores de "sim" e "não" precisam ser convertidas para factor, enquanto variáveis numéricas como age, Medu, Fedu, e as notas (G1, G2, G3) estão corretas como inteiros.
+```{r}
+student_performance$school <- as.factor(student_performance$school)
+student_performance$sex <- as.factor(student_performance$sex)
+student_performance$address <- as.factor(student_performance$address)
+student_performance$famsize <- as.factor(student_performance$famsize)
+student_performance$Pstatus <- as.factor(student_performance$Pstatus)
+student_performance$Mjob <- as.factor(student_performance$Mjob)
+student_performance$Fjob <- as.factor(student_performance$Fjob)
+student_performance$reason <- as.factor(student_performance$reason)
+student_performance$nursery <- as.factor(student_performance$nursery)
+student_performance$internet <- as.factor(student_performance$internet)
+student_performance$guardian.x <- as.factor(student_performance$guardian.x)
+student_performance$schoolsup.x <- as.factor(student_performance$schoolsup.x)
+student_performance$famsup.x <- as.factor(student_performance$famsup.x)
+student_performance$paid.x <- as.factor(student_performance$paid.x)
+student_performance$activities.x <- as.factor(student_performance$activities.x)
+student_performance$higher.x <- as.factor(student_performance$higher.x)
+student_performance$romantic.x <- as.factor(student_performance$romantic.x)
+
+str(student_performance)
 ```
 
 ### Questão 4
 
 **Descrição:**  
-Nesta etapa, adicionamos dados ausentes ao conjunto de dados e em seguida removemos a linha adicional. Após isso, usamos a função `summary()` para gerar um resumo estatístico.
+Usado a função `summary()` temos resumo estatístico do dataframe, mas para garantir que nao exista valore NA, uma funcao de soma(sum) que vai contar a quantidade de valores NA no dataframe.
 
 ```{r}
-# Adicionar uma linha com dados ausentes
-# iris <- rbind(iris, c(5.86, NA, NA, 1.89, as.factor("virginica")))
-
-# Remover a última linha (caso tenhamos adicionado)
-# iris <- iris[-151,]
-
 # Resumo do dataset
-summary(iris)
+summary(student_performance)
+
+# Contar o número total de NAs
+quant_na <- sum(is.na(student_performance))
+
+# Exibir o total de NAs
+print(paste("Quantidade de dados ausentes(NA):", quant_na))
 ```
 
 ### Questão 5
@@ -73,78 +102,428 @@ summary(iris)
 Aqui, usamos a função `summary()` para obter um resumo estatístico e calcular a porcentagem de valores ausentes.
 
 ```{r}
-# Resumo estatístico dos dados
-summary(iris)
+# Contar amostras em cada classe das variáveis G3.x e G3.y
+count_G3_x <- table(student_performance$G3.x)
+count_G3_y <- table(student_performance$G3.y)
 
-# Cálculo da porcentagem de valores ausentes (NA) em cada coluna
-na_percent <- sapply(iris, function(x) sum(is.na(x)) / length(x) * 100)
-na_percent
+# Criar data frames organizados com os nomes de coluna corretos
+df_porcentagem_G3_x <- as.data.frame(count_G3_x)
+colnames(df_porcentagem_G3_x) <- c("Classe", "Amostra")
+
+# Calcular a porcentagem e adicionar como nova coluna
+df_porcentagem_G3_x <- df_porcentagem_G3_x %>%
+  mutate(Porcentagem = round((Amostra / sum(Amostra)) * 100, 2))
+
+df_porcentagem_G3_y <- as.data.frame(count_G3_y)
+colnames(df_porcentagem_G3_y) <- c("Classe", "Amostra")
+
+# Calcular a porcentagem e adicionar como nova coluna
+df_porcentagem_G3_y <- df_porcentagem_G3_y %>%
+  mutate(Porcentagem = round((Amostra / sum(Amostra)) * 100, 2))
+
+# Ordenar os data frames pela porcentagem em ordem decrescente
+df_porcentagem_G3_x <- df_porcentagem_G3_x %>% arrange(desc(Porcentagem))
+df_porcentagem_G3_y <- df_porcentagem_G3_y %>% arrange(desc(Porcentagem))
+
+# Formatar a coluna de porcentagem
+df_porcentagem_G3_x$Porcentagem <- percent(df_porcentagem_G3_x$Porcentagem / 100)
+df_porcentagem_G3_y$Porcentagem <- percent(df_porcentagem_G3_y$Porcentagem / 100)
+
+# Exibir as tabelas com kable
+kable(df_porcentagem_G3_x, caption = "Porcentagem da Classe: G3.x")
+kable(df_porcentagem_G3_y, caption = "Porcentagem da Classe: G3.y")
 ```
 
 ### Questão 6
-
 **Descrição:**  
 (Inclua a descrição e o código para a Questão 6)
+```{r}
+# Contar amostras em cada classe para G3.x e G3.y
+count_G3_x <- table(student_performance$G3.x)
+count_G3_y <- table(student_performance$G3.y)
+
+# Criar data frames organizados
+df_porcentagem_G3_x <- data.frame(
+  Classe = names(count_G3_x),
+  Amostra = as.vector(count_G3_x)
+)
+
+df_porcentagem_G3_y <- data.frame(
+  Classe = names(count_G3_y),
+  Amostra = as.vector(count_G3_y)
+)
+
+# Calcular porcentagens
+df_porcentagem_G3_x$Porcentagem <- round((df_porcentagem_G3_x$Amostra / sum(df_porcentagem_G3_x$Amostra)) * 100, 2)
+df_porcentagem_G3_y$Porcentagem <- round((df_porcentagem_G3_y$Amostra / sum(df_porcentagem_G3_y$Amostra)) * 100, 2)
+
+# Ordenar os data frames pela porcentagem em ordem decrescente
+df_porcentagem_G3_x <- df_porcentagem_G3_x %>% arrange(desc(Porcentagem))
+df_porcentagem_G3_y <- df_porcentagem_G3_y %>% arrange(desc(Porcentagem))
+
+# Visualizar resultados
+print(df_porcentagem_G3_x)
+print(df_porcentagem_G3_y)
+
+# Criar gráficos de barras para visualizar a distribuição das classes
+library(ggplot2)
+
+# Ordenar a coluna Classe dinamicamente com os níveis únicos
+df_porcentagem_G3_x$Classe <- factor(df_porcentagem_G3_x$Classe, levels = unique(df_porcentagem_G3_x$Classe))
+df_porcentagem_G3_y$Classe <- factor(df_porcentagem_G3_y$Classe, levels = unique(df_porcentagem_G3_y$Classe))
+
+# Gráfico para G3.x
+ggplot(df_porcentagem_G3_x, aes(x = Classe, y = Porcentagem)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Distribuição de G3.x", x = "Classes", y = "Porcentagem") +
+  theme_minimal()
+
+# Gráfico para G3.y
+ggplot(df_porcentagem_G3_y, aes(x = Classe, y = Porcentagem)) +
+  geom_bar(stat = "identity") +
+  labs(title = "Distribuição de G3.y", x = "Classes", y = "Porcentagem") +
+  theme_minimal()
+```
+
+#### age_distribution
+Vou fazer uma analises para verficar como está a balaceamento de numero de amostras de dados em relacao a idade, pois mais para frente tenho a inteção de fazer algumas analises pensado na idade.
+```{r}
+# Contar o número de amostras para cada idade
+age_distribution <- table(student_performance$age)
+
+# Criar um data frame organizado
+df_age_distribution <- data.frame(
+  Idade = names(age_distribution),
+  Amostras = as.vector(age_distribution)
+)
+
+# Mostrar o resultado
+print(df_age_distribution)
+
+```
 
 ### Questão 7
 
 **Descrição:**  
-(Inclua a descrição e o código para a Questão 7)
+Para calcular a média e o desvio padrão vou usar as funções mean() e sd(). Vou demosntrar para apenas alguma variavel mais importantes/interessante na minha visão:
+Medu: Refere-se ao nível de educação da mãe, onde valores inteiros indicam anos de escolaridade.
+
+Fedu: Assim como Medu, essa variável indica o nível de educação do pai, também expressa em anos de escolaridade.
+
+studytime.x e studytime.y: Representam o tempo dedicado aos estudos. Um tempo maior de estudo pode estar relacionado a um melhor desempenho acadêmico.
+
+G1, G2, G3: Essas variáveis indicam as notas dos alunos em diferentes períodos (G1 é a primeira nota, G2 a segunda, e G3 a nota final). São fundamentais para analisar o desempenho acadêmico.
+
+Dalc.x e Dalc.y: Indicam o consumo de álcool durante a semana, que pode ter uma correlação com o desempenho escolar.
+
+Walc.x e Walc.y: Representam o consumo de álcool nos fins de semana. Assim como Dalc, pode afetar o desempenho dos alunos.
+
+#### Medu
+```{r}
+media_Medu <- mean(student_performance$Medu)
+
+desvio_padrao_Medu <- sd(student_performance$Medu)
+
+print(paste("Média dos valores esperados (Medu):", round(media_Medu, 2)))
+print(paste("Desvio padrão dos valores esperados (Medu):", round(desvio_padrao_Medu, 2)))
+```
+
+#### Fedu
+```{r}
+media_Fedu <- mean(student_performance$Fedu)
+
+desvio_padrao_Fedu <- sd(student_performance$Fedu)
+
+print(paste("Média dos valores esperados (Fedu):", round(media_Fedu, 2)))
+print(paste("Desvio padrão dos valores esperados (Fedu):", round(desvio_padrao_Fedu, 2)))
+```
+
+#### studytime.x e studytime.y
+```{r}
+# Média e desvio padrão para studytime.x
+media_studytime_x <- mean(student_performance$studytime.x, na.rm = TRUE)
+desvio_studytime_x <- sd(student_performance$studytime.x, na.rm = TRUE)
+
+# Média e desvio padrão para studytime.y
+media_studytime_y <- mean(student_performance$studytime.y, na.rm = TRUE)
+desvio_studytime_y <- sd(student_performance$studytime.y, na.rm = TRUE)
+
+# Resultados
+cat("studytime.x - Média:", media_studytime_x, "Desvio Padrão:", desvio_studytime_x, "\n")
+cat("studytime.y - Média:", media_studytime_y, "Desvio Padrão:", desvio_studytime_y, "\n")
+```
+
+#### Dalc.x e Dalc.y
+```{r}
+# Média e desvio padrão para Dalc.x
+media_Dalc_x <- mean(student_performance$Dalc.x, na.rm = TRUE)
+desvio_Dalc_x <- sd(student_performance$Dalc.x, na.rm = TRUE)
+
+# Média e desvio padrão para Dalc.y
+media_Dalc_y <- mean(student_performance$Dalc.y, na.rm = TRUE)
+desvio_Dalc_y <- sd(student_performance$Dalc.y, na.rm = TRUE)
+
+# Resultados Dalc
+cat("Dalc.x - Média:", media_Dalc_x, "Desvio Padrão:", desvio_Dalc_x, "\n")
+cat("Dalc.y - Média:", media_Dalc_y, "Desvio Padrão:", desvio_Dalc_y, "\n")
+```
+
+#### G1, G2, G3
+```{r}
+# Média e desvio padrão para G1
+media_G1 <- mean(student_performance$G1.x, na.rm = TRUE)
+desvio_G1 <- sd(student_performance$G1.x, na.rm = TRUE)
+
+# Média e desvio padrão para G2
+media_G2 <- mean(student_performance$G2.x, na.rm = TRUE)
+desvio_G2 <- sd(student_performance$G2.x, na.rm = TRUE)
+
+# Média e desvio padrão para G3
+media_G3 <- mean(student_performance$G3.x, na.rm = TRUE)
+desvio_G3 <- sd(student_performance$G3.x, na.rm = TRUE)
+```
+
+#### Walc.x e Walc.y
+```{r}
+# Média e desvio padrão para Walc.x
+media_Walc_x <- mean(student_performance$Walc.x, na.rm = TRUE)
+desvio_Walc_x <- sd(student_performance$Walc.x, na.rm = TRUE)
+
+# Média e desvio padrão para Walc.y
+media_Walc_y <- mean(student_performance$Walc.y, na.rm = TRUE)
+desvio_Walc_y <- sd(student_performance$Walc.y, na.rm = TRUE)
+
+# Resultados Walc
+cat("Walc.x - Média:", media_Walc_x, "Desvio Padrão:", desvio_Walc_x, "\n")
+cat("Walc.y - Média:", media_Walc_y, "Desvio Padrão:", desvio_Walc_y, "\n")
+```
+
 
 ### Questão 8
 
 **Descrição:**  
-Calculamos as médias, os valores mínimos e máximos das variáveis `Sepal.Length` e `Petal.Length` para as espécies `setosa`, `versicolor` e `virginica`.
-
+Para identificar outliers nas variáveis mais importantes, vou utilizar o gráfico boxplot.
 ```{r}
-# Setosa
-mean(iris$Sepal.Length[1:50])
-mean(iris$Petal.Length[1:50])
-min(iris$Sepal.Length[1:50])
-min(iris$Petal.Length[1:50])
-max(iris$Sepal.Length[1:50])
-max(iris$Petal.Length[1:50])
+# Carregar a biblioteca necessária
+library(ggplot2)
 
-# Versicolor
-mean(iris$Sepal.Length[51:100])
-mean(iris$Petal.Length[51:100])
+# Boxplot para Dalc.x
+ggplot(student_performance, aes(x = "", y = Dalc.x)) +
+  geom_boxplot() +
+  labs(title = "Boxplot de Dalc.x", y = "Dalc.x") +
+  theme_minimal()
 
-# Virginica
-mean(iris$Sepal.Length[101:150])
-mean(iris$Petal.Length[101:150])
+# Boxplot para Dalc.y
+ggplot(student_performance, aes(x = "", y = Dalc.y)) +
+  geom_boxplot() +
+  labs(title = "Boxplot de Dalc.y", y = "Dalc.y") +
+  theme_minimal()
+
+# Boxplot para G1
+ggplot(student_performance, aes(x = "", y = G1.x)) +
+  geom_boxplot() +
+  labs(title = "Boxplot de G1", y = "G1") +
+  theme_minimal()
+
+# Boxplot para G2
+ggplot(student_performance, aes(x = "", y = G2.x)) +
+  geom_boxplot() +
+  labs(title = "Boxplot de G2", y = "G2") +
+  theme_minimal()
+
+# Boxplot para G3
+ggplot(student_performance, aes(x = "", y = G3.x)) +
+  geom_boxplot() +
+  labs(title = "Boxplot de G3", y = "G3") +
+  theme_minimal()
+
+# Boxplot para Walc.x
+ggplot(student_performance, aes(x = "", y = Walc.x)) +
+  geom_boxplot() +
+  labs(title = "Boxplot de Walc.x", y = "Walc.x") +
+  theme_minimal()
+
+# Boxplot para Walc.y
+ggplot(student_performance, aes(x = "", y = Walc.y)) +
+  geom_boxplot() +
+  labs(title = "Boxplot de Walc.y", y = "Walc.y") +
+  theme_minimal()
 ```
+A análise dos boxplots para as variáveis importantes indicou que não há outliers significativos. Isso sugere que os dados estão dentro de uma faixa considerada normal para essas variáveis, sem valores extremos que possam distorcer a análise ou indicar possíveis anomalias nos dados.
 
 ### Questão 9
 
 **Descrição:**  
-(Inclua a descrição e o código para a Questão 9)
+```{r}
+# Função para criar uma tabela de estatísticas descritivas
+descriptive_stats <- function(variable) {
+  return(data.frame(
+    Minimo = min(variable, na.rm = TRUE),
+    Maximo = max(variable, na.rm = TRUE),
+    Media = mean(variable, na.rm = TRUE),
+    Desvio_Padrao = sd(variable, na.rm = TRUE)
+  ))
+}
+
+# Aplicar a função para cada variável
+resultado_Dalc.x <- descriptive_stats(student_performance$Dalc.x)
+resultado_Dalc.y <- descriptive_stats(student_performance$Dalc.y)
+resultado_G1 <- descriptive_stats(student_performance$G1.y)
+resultado_G2 <- descriptive_stats(student_performance$G2.y)
+resultado_G3 <- descriptive_stats(student_performance$G3.y)
+resultado_Walc.x <- descriptive_stats(student_performance$Walc.x)
+resultado_Walc.y <- descriptive_stats(student_performance$Walc.y)
+
+# Combinar resultados em uma tabela
+tabela_resultados <- data.frame(
+  Variavel = c("Dalc.x", "Dalc.y", "G1.y", "G2.y", "G3.y", "Walc.x", "Walc.y"),
+  Minimo = c(resultado_Dalc.x$Minimo, resultado_Dalc.y$Minimo, resultado_G1$Minimo, resultado_G2$Minimo, resultado_G3$Minimo, resultado_Walc.x$Minimo, resultado_Walc.y$Minimo),
+  Maximo = c(resultado_Dalc.x$Maximo, resultado_Dalc.y$Maximo, resultado_G1$Maximo, resultado_G2$Maximo, resultado_G3$Maximo, resultado_Walc.x$Maximo, resultado_Walc.y$Maximo),
+  Media = c(resultado_Dalc.x$Media, resultado_Dalc.y$Media, resultado_G1$Media, resultado_G2$Media, resultado_G3$Media, resultado_Walc.x$Media, resultado_Walc.y$Media),
+  Desvio_Padrao = c(resultado_Dalc.x$Desvio_Padrao, resultado_Dalc.y$Desvio_Padrao, resultado_G1$Desvio_Padrao, resultado_G2$Desvio_Padrao, resultado_G3$Desvio_Padrao, resultado_Walc.x$Desvio_Padrao, resultado_Walc.y$Desvio_Padrao)
+)
+
+print(tabela_resultados)
+```
 
 ### Questão 10
 
 **Descrição:**  
 (Inclua a descrição e o código para a Questão 10)
 
+```{r}
+library(ggplot2)
+library(dplyr)
+
+# Gráfico de barras para uma variável categórica (exemplo: sex)
+ggplot(student_performance, aes(x = sex, fill = as.factor(G3.y))) +
+  geom_bar(position = "dodge") +
+  labs(title = "Distribuição de G3 por Sexo", x = "Sexo", y = "Contagem", fill = "G3") +
+  theme_minimal()
+
+# Gráfico de dispersão para uma variável numérica (exemplo: G1 vs G2)
+ggplot(student_performance, aes(x = G1.y, y = G2.y, color = as.factor(G3.y))) +
+  geom_point(alpha = 0.6) +
+  labs(title = "Relação entre G1 e G2 com G3", x = "G1", y = "G2", color = "G3") +
+  theme_minimal()
+
+  # Calcular o coeficiente de correlação
+correlation <- cor(student_performance$age, student_performance$G3.y, use = "complete.obs")
+print(paste("Coeficiente de correlação entre idade e G3:", correlation))
+
+# Gráfico de dispersão
+ggplot(student_performance, aes(x = age, y = G3.y)) +
+  geom_point() +
+  labs(title = "Relação entre Idade e G3", x = "Idade", y = "G3") +
+  theme_minimal()
+
+```
+
+Com base nas análises realizadas, foram identificados alguns pontos interessantes sobre o desempenho dos alunos nas notas finais (G3):
+
+Desempenho do Sexo Feminino: A análise mostrou que as alunas do sexo feminino apresentam médias finais (G3) superiores em comparação aos alunos do sexo masculino. Essa diferença pode indicar não apenas uma maior dedicação, mas também a presença de fatores socioeconômicos ou culturais que influenciam o desempenho acadêmico entre os gêneros.
+
+Consistência nas Notas: Observou-se que alunos que obtiveram uma boa nota na primeira avaliação (G1) tendem a manter essa média nas avaliações subsequentes (G2 e G3). Isso sugere que o desempenho inicial pode ser um bom indicador do sucesso contínuo, indicando a importância da motivação e da confiança no processo de aprendizagem.
+
+Idade e Desempenho: Apesar de as notas mais altas terem sido registradas para alunos de 15 a 16 anos, a maioria das amostras está na faixa etária de 16 a 17 anos. Essa concentração de dados pode gerar uma impressão distorcida sobre a relação entre idade e desempenho acadêmico. Portanto, embora a idade mais jovem possa estar associada a notas mais altas, essa análise deve ser vista com cautela devido à falta de diversidade nas amostras. Assim, a aparente tendência de que alunos mais novos tenham um desempenho melhor pode não ser generalizável.
+
 ### Questão 11
 
 **Descrição:**  
-(Inclua a descrição e o código para a Questão 11)
+Para ajudar a identificar quais variáveis têm maior influência na nota final G3, e assim facilitando a análise, vou separar em dois graficos, e vou pegar como foco a variavel G3, que seria a nota final
+```{r}
+# Calcular a correlação entre todas as variáveis numéricas e G3.x
+correlations_x <- cor(student_performance[, sapply(student_performance, is.numeric)], use = "complete.obs")
+
+# Selecionar as correlações com G3.x
+cor_g3_x <- correlations_x[,"G3.x"]
+
+# Exibir as correlações
+print(cor_g3_x)
+
+# Ordenar as correlações em ordem decrescente
+cor_g3_x_sorted <- sort(cor_g3_x, decreasing = TRUE)
+
+print(cor_g3_x_sorted)
+
+library(ggplot2)
+cor_g3_x_df <- as.data.frame(cor_g3_x_sorted)
+cor_g3_x_df$Variable <- rownames(cor_g3_x_df)
+colnames(cor_g3_x_df) <- c("Correlation", "Variable")
+
+ggplot(cor_g3_x_df, aes(x = reorder(Variable, Correlation), y = Correlation)) +
+  geom_bar(stat = "identity", fill = "steelblue") +
+  coord_flip() +
+  labs(title = "Correlação das Variáveis com G3.x",
+       x = "Variáveis",
+       y = "Correlação") +
+  theme_minimal()
+```
+
+Agora vou fazer a correlação tambem para G3.y
+```{r}
+# Calcular a correlação entre todas as variáveis numéricas e G3.y
+correlations_y <- cor(student_performance[, sapply(student_performance, is.numeric)], use = "complete.obs")
+
+# Selecionar as correlações com G3.y
+cor_g3_y <- correlations_y[,"G3.y"]
+
+# Exibir as correlações
+print(cor_g3_y)
+
+# Ordenar as correlações em ordem decrescente
+cor_g3_y_sorted <- sort(cor_g3_y, decreasing = TRUE)
+
+# Exibir as correlações ordenadas
+print(cor_g3_y_sorted)
+
+# Visualizar as correlações em um gráfico
+cor_g3_y_df <- as.data.frame(cor_g3_y_sorted)
+cor_g3_y_df$Variable <- rownames(cor_g3_y_df)
+colnames(cor_g3_y_df) <- c("Correlation", "Variable")
+
+ggplot(cor_g3_y_df, aes(x = reorder(Variable, Correlation), y = Correlation)) +
+  geom_bar(stat = "identity", fill = "lightgreen") +
+  coord_flip() +
+  labs(title = "Correlação das Variáveis com G3.y",
+       x = "Variáveis",
+       y = "Correlação") +
+  theme_minimal()
+```
 
 ### Questão 12
 
 **Descrição:**  
-(Inclua a descrição e o código para a Questão 12)
+Com a base de dados student_performance, consigo realizar diversas análises que ajudam a entender o desempenho acadêmico dos alunos. Por exemplo, posso fazer uma análise descritiva para explorar variáveis como notas finais (G1, G2, G3), idade, sexo e situação familiar. Além disso, é possível avaliar a correlação entre variáveis, identificando quais fatores impactam diretamente nas notas finais. Também posso utilizar técnicas de modelagem preditiva para prever o desempenho de alunos com base em outras variáveis, o que pode ser útil para intervenções.
+
+Antes de realizar essas análises, é fundamental passar por um pré-processamento dos dados. Isso envolve tratar dados ausentes, codificar variáveis categóricas e normalizar as variáveis numéricas, se necessário. A identificação e o tratamento de outliers também são importantes, pois podem distorcer a análise. Essas etapas garantem que as análises e modelos gerados sejam mais precisos e confiáveis, permitindo que eu tire conclusões mais robustas sobre o desempenho acadêmico dos estudantes.
 
 ### Questão 13
 
 **Descrição:**  
-(Inclua a descrição e o código para a Questão 13)
+Ao analisar a base de dados student_performance, espera-se identificar padrões relacionados ao desempenho acadêmico dos alunos. Um dos conhecimentos mais comuns é que fatores como idade, sexo e situação socioeconômica podem influenciar as notas.. Além disso, é possível observar a relação entre a frequência a atividades extracurriculares e o desempenho escolar, já que o envolvimento em atividades sociais e culturais muitas vezes está associado a melhores resultados acadêmicos.
 
 ### Questão 14
 
 **Descrição:**  
-(Inclua a descrição e o código para a Questão 14)
+
+| **Estudo**                                                                 | **Informações Relatadas**                                                                                        | **Objetivo da Análise**                                                                                                      |
+|---------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------|
+| **Data Mining of Students' Performance: Turkish Students as a Case Study**<br>O. Oyedotun et al. (2015) | O estudo usou redes neurais para mapear a relação entre atributos relacionados à avaliação dos alunos e a repetição de cursos. Foram relatadas as taxas de reconhecimento e o tempo de treinamento das redes. | Prever quantas vezes um aluno pode repetir um curso antes de passar, usando atributos relacionados ao curso, professor e aluno. |
+| **Adding bias to reduce variance in psychological results: A tutorial on penalized regression**<br>Nathaniel E. Helwig (2017) | O artigo discutiu os benefícios da regressão penalizada, apresentando métodos como ridge, lasso e elastic net. Utilizou um exemplo de predição da performance em um exame de matemática com 30 preditores. | Demonstrar como a regressão penalizada pode fornecer resultados mais precisos e interpretáveis em comparação com OLS clássico e soluções de regressão passo a passo. |
+
+No primeiro estudo, a ênfase foi na utilização de redes neurais para entender melhor os padrões que influenciam a performance dos alunos, o que pode facilitar a adaptação de sistemas acadêmicos. No segundo, a discussão focou em como métodos de regressão penalizada podem aprimorar a análise estatística, reduzindo a variância e melhorando a precisão em dados de performance estudantil. Ambos os estudos indicam a importância de um pré-processamento adequado dos dados, como a normalização e a seleção de características relevantes, para garantir a eficácia dos modelos de análise.
+
+Esses estudos não apenas reforçam a relevância de entender a performance estudantil, mas também mostram como técnicas avançadas de análise de dados podem ser aplicadas para extrair insights valiosos sobre os fatores que afetam o aprendizado
 
 ### Questão 15
 
 **Descrição:**  
-(Inclua a descrição e o código para a Questão 15)
+A análise da base de dados sobre o desempenho dos estudantes trouxe à tona várias conclusões importantes. Observamos que variáveis como o sexo, o tempo de estudo e o consumo de bebidas alcoólicas estão significativamente correlacionadas com as notas finais dos alunos. Por exemplo, o sexo feminino apresentou médias de notas finais mais altas em comparação com o sexo masculino. Além disso, os estudantes que dedicam mais tempo aos estudos tendem a ter um desempenho melhor, sugerindo que estratégias de aprendizado eficazes são cruciais para o sucesso acadêmico. A identificação de tais padrões pode ajudar instituições de ensino a desenvolverem políticas educacionais mais direcionadas, melhorando assim a eficácia do ensino.
+
+Para futuras análises, seria interessante aprofundar o estudo em variáveis não apenas quantitativas, mas também qualitativas, como o ambiente familiar e a motivação dos alunos. A inclusão de dados mais variados e representativos poderia enriquecer ainda mais as conclusões. Além disso, a aplicação de técnicas de machine learning poderia aprimorar a previsão de desempenho acadêmico, oferecendo ferramentas valiosas para intervenções educativas.
+
+Experiência com o Relatório:
+Durante a elaboração do relatório, enfrentei alguns desafios, como a limpeza e o pré-processamento dos dados, que exigiram atenção aos detalhes e um bom conhecimento de R. A parte que mais me chamou a atenção foi a análise de correlação, pois me permitiu visualizar relações que não eram evidentes à primeira vista. Minha experiência anterior com análise estatística e programação em R foi fundamental para superar as dificuldades e desenvolver um entendimento mais profundo do conjunto de dados.
+
+A interação com meus colegas foi muito positiva, permitindo trocas de ideias e insights que enriqueceram o processo de análise. A colaboração facilitou a resolução de problemas e a aplicação de diferentes perspectivas na interpretação dos dados. Isso não só melhorou a qualidade do relatório final, mas também contribuiu para um aprendizado coletivo sobre análise de dados e estatísticas aplicadas.
